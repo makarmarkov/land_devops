@@ -45,7 +45,9 @@ jobs:
       - name: Провека на hotfix 
         id: hotfix-bracnh
         if:  contains(steps.branch-names.outputs.current_branch,'hotfix')
-        run: echo "ЗАмержена ветка hotfix. Требуется произвести обновлении файла version в части патч версии"
+        run: | 
+          echo "ЗАмержена ветка hotfix. Требуется произвести обновлении файла version в части патч версии"
+          exit 1
         
   # Проверка файла на наличие в репозитории 
   version-file-check:
