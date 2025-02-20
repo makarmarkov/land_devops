@@ -41,7 +41,7 @@ jobs:
         if:  contains(steps.branch-names.outputs.current_branch,'feature')
         run: echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
       - name: Провека на hotfix 
-        if:  contains(steps.branch-names.outputs.current_branch,'feature')
-        run: echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
+        if:  contains(steps.branch-names.outputs.current_branch,'hotfix')
+        run: echo "ЗАмержена ветка hotfix. Требуется произвести обновлении файла version в части патч версии"
 
   
