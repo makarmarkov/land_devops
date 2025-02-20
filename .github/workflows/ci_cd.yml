@@ -47,9 +47,12 @@ jobs:
         if:  contains(steps.branch-names.outputs.current_branch,'hotfix')
         run: echo "ЗАмержена ветка hotfix. Требуется произвести обновлении файла version в части патч версии"
         
+  # Проверка файла на наличие в репозитории 
   version-file-check:
     runs-on: ubuntu-latest
+    # чего ждем. Т.е. начнем выполняться только после того, как отработает джоба, указанная выше
     needs: pre-merge-check
+    # постепенно выполняем шаги
     steps:
       - name: Verify current directory 
         run: pwd
