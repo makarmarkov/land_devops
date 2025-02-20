@@ -34,4 +34,5 @@ jobs:
           echo "${{ steps.branch-names.outputs.default_branch }}"
       - name: check if branch is start FEATURE 
         if:  steps.branch-names.outputs.current_branch  == 'feature*'
+        run: "ech for feature"
         # Outputs: "feature/test" current PR branch.
