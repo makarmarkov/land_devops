@@ -11,4 +11,6 @@ ten string
 eleven string
 twelve string
 13
-14
+1
+4
+21
