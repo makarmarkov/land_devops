@@ -37,23 +37,23 @@ jobs:
           echo "REF NAME      :${{github.ref_name}}"
           echo "DEFAULT BRANCH:${{ steps.branch-names.outputs.default_branch }}"
           
-      - name: Check if bracnh contains FEATURE
+      - name: Первая проверка - обычно проходит
         if:  ${{steps.branch-names.outputs.current_branch}}  == 'feature*'
         run: echo " nothing"
 
-      - name: Check if bracnh contains FEATURE 1
+      - name: Вторая проверка - не проходит
         if:  ${{ steps.branch-names.outputs.current_branch == 'feature' }}
         run: echo " nothing"
 
-      - name: Check if bracnh contains FEATURE 2
+      - name: Третья проверка - обычно проходит
         if:  contains(${{ steps.branch-names.outputs.current_branch }},'feature')
         run: echo "nothing"
       
-      - name: Check if bracnh contains FEATURE 2.1
+      - name: Четвертая проверка - обычно проходит 
         if:  contains(steps.branch-names.outputs.current_branch,'feature')
         run: echo "nothing"
 
-      - name: Check if bracnh contains FEATURE 3
+      - name: Пятая проверка - не проходит обычно
         if:  ${{steps.branch-names.outputs.current_branch  == 'fe123ature' }}
         run: echo "nothing"
         # Outputs: "feature/test" current PR branch.
