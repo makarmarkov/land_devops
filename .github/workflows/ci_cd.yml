@@ -15,7 +15,7 @@ on:
 
 # Создаем job
 jobs:
-  version-check:
+  pre-merge-check:
     runs-on: ubuntu-latest
     steps:
       - name: Check on existing VERSION file
@@ -43,5 +43,14 @@ jobs:
       - name: Провека на hotfix 
         if:  contains(steps.branch-names.outputs.current_branch,'hotfix')
         run: echo "ЗАмержена ветка hotfix. Требуется произвести обновлении файла version в части патч версии"
+        
+  version-file-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify current directory 
+        run: pwd
+      - name: Print info about directory 
+        run: ls -la
+    
 
   
