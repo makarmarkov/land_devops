@@ -12,6 +12,9 @@ on:
     types: [closed]
     branches:
       - release
+env:
+  TYPE_BRANCH: none
+  NAME_VERSION_FILE: version
 
 # Создаем job
 jobs:
@@ -41,13 +44,18 @@ jobs:
       - name: Провека на feature 
         id: feature-branch
         if:  contains(steps.branch-names.outputs.current_branch,'feature')
-        run: echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
+        run: | 
+          echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
+          echo "TYPE_BRANCH='feature'" >> $GITHub_ENV
+          echo "TYPE_BRANCH_NEW='feature'" >> $GITHub_ENV
       - name: Провека на hotfix 
         id: hotfix-bracnh
         if:  contains(steps.branch-names.outputs.current_branch,'hotfix')
         run: | 
           echo "ЗАмержена ветка hotfix. Требуется произвести обновлении файла version в части патч версии"
-          exit 1
+          echo "TYPE_BRANCH='hotfix'" >> $GITHub_ENV
+          echo "TYPE_BRANCH_NEW='hotfix'" >> $GITHub_ENV
+        
         
   # Проверка файла на наличие в репозитории 
   version-file-check:
@@ -60,15 +68,32 @@ jobs:
         run: pwd
       - name: Print info about directory 
         run: ls -la
+      - name: Print info about ${{env.NAME_VERSION_FILE}} 
+        run: ls -la
         
-  version-hotfix:
+  # Производим определение какую версию нам обновлять       
+  update-version:
     runs-on: ubuntu-latest
     needs: version-file-check
     steps:
-      - name: Verify current directory 
-        run: pwd
-      - name: Print info about directory 
-        run: ls -la
+        # обновляем минорную версию
+      - name: Check update version MINOR 
+        if: ${{ env.TYPE_BRANCH == 'feature' }}
+        run: echo "Update minor version"
+
+        # обновляем патч версию
+      - name: Check update version PATCH 
+        if: ${{ env.TYPE_BRANCH == 'hotfix' }}
+        run: echo "Update hotfix version"
+
+        # Ничего не обновляем и выходим
+      - name: Check update version MINOR 
+        if: ${{ env.TYPE_BRANCH == 'none' }}
+        run: | 
+          echo "Nothing to update"
+          exit 0
+              
+      
     
 
   
