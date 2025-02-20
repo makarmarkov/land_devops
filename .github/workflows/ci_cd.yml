@@ -9,7 +9,7 @@ on:
   pull_request:
     # На какие типы событий он должен работать
     #types: [opened, synchronize, reopened, closed, assigned, unassigned, labeled, unlabeled, edited]
-    types: [opened, synchronize, reopened, closed, assigned, unassigned, labeled, unlabeled, edited]
+    types: [closed]
     branches:
       - release
 
@@ -28,10 +28,14 @@ jobs:
       
       - name: Current branch names2
         run: |
-          echo "${{ steps.branch-names.outputs.current_branch }}"
-          echo "${{github.ref}}"
-          echo "${{github.ref_name}}"
-          echo "${{ steps.branch-names.outputs.default_branch }}"
+          echo "EVENT NAME    : ${{ github.event_name }}"
+          echo "ACTION        : ${{github.event.action }}"
+          echo "EVENT NAME    : ${{ github.event_name }}"
+          echo "IS            : ${{github.event.pull_request.merged}}"
+          echo "CURRENT BRACNH: ${{ steps.branch-names.outputs.current_branch }}"
+          echo "REF           : ${{github.ref}}"
+          echo "REF NAME      :${{github.ref_name}}"
+          echo "DEFAULT BRANCH:${{ steps.branch-names.outputs.default_branch }}"
       - name: check if branch is start FEATURE 
         if:  steps.branch-names.outputs.current_branch  == 'feature*'
         run: "ech for feature"
