@@ -36,24 +36,12 @@ jobs:
           echo "REF           : ${{github.ref}}"
           echo "REF NAME      :${{github.ref_name}}"
           echo "DEFAULT BRANCH:${{ steps.branch-names.outputs.default_branch }}"
-          
-      - name: Первая проверка - обычно проходит
-        if:  ${{steps.branch-names.outputs.current_branch}}  == 'feature*'
-        run: echo " nothing"
-
-      - name: Вторая проверка - не проходит
-        if:  ${{ steps.branch-names.outputs.current_branch == 'feature' }}
-        run: echo " nothing"
-
-      - name: Третья проверка - обычно проходит
-        if:  contains(${{ steps.branch-names.outputs.current_branch }},'feature')
-        run: echo "nothing"
-      
-      - name: Четвертая проверка - обычно проходит 
+                
+      - name: Провека на feature 
         if:  contains(steps.branch-names.outputs.current_branch,'feature')
-        run: echo "nothing"
+        run: echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
+      - name: Провека на hotfix 
+        if:  contains(steps.branch-names.outputs.current_branch,'feature')
+        run: echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
 
-      - name: Пятая проверка - не проходит обычно
-        if:  ${{steps.branch-names.outputs.current_branch  == 'fe123ature' }}
-        run: echo "nothing"
-        # Outputs: "feature/test" current PR branch.
+  
