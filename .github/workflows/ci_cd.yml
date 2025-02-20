@@ -36,7 +36,16 @@ jobs:
           echo "REF           : ${{github.ref}}"
           echo "REF NAME      :${{github.ref_name}}"
           echo "DEFAULT BRANCH:${{ steps.branch-names.outputs.default_branch }}"
-      - name: check if branch is start FEATURE 
-        if:  steps.branch-names.outputs.current_branch  == 'feature*'
+          
+      - name: Check if bracnh contains FEATURE
+        if:  ${{steps.branch-names.outputs.current_branch}}  == 'feature*'
         run: "ech for feature"
+
+      - name: Check if bracnh contains FEATURE 2
+        if:  contains(${{ steps.branch-names.outputs.current_branch }},'feature')
+        run: "ech for feature 2"
+
+      - name: Check if bracnh contains FEATURE 3
+        if:  ${{steps.branch-names.outputs.current_branch}}  == 'feature'
+        run: "ech for feature 3"
         # Outputs: "feature/test" current PR branch.
