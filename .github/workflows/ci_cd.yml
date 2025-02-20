@@ -42,11 +42,15 @@ jobs:
         run: echo " nothing"
 
       - name: Check if bracnh contains FEATURE 1
-        if:  ${{steps.branch-names.outputs.current_branch == 'feature*' }}
+        if:  ${{ steps.branch-names.outputs.current_branch == 'feature' }}
         run: echo " nothing"
 
       - name: Check if bracnh contains FEATURE 2
         if:  contains(${{ steps.branch-names.outputs.current_branch }},'feature')
+        run: echo "nothing"
+      
+      - name: Check if bracnh contains FEATURE 2.1
+        if:  contains(steps.branch-names.outputs.current_branch,'feature')
         run: echo "nothing"
 
       - name: Check if bracnh contains FEATURE 3
