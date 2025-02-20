@@ -20,7 +20,12 @@ jobs:
       - name: Check on existing VERSION file
         shell: bash
         run: echo "check VERSION file in ROOT directory"
-      - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
+      
+      - name: Get branch names
+        id: branch-names
+        uses: tj-actions/branch-names@v8
+      
+      - name: Current branch names2
+        run: |
+          echo "${{ steps.branch-names.outputs.current_branch }}"
+        # Outputs: "feature/test" current PR branch.
