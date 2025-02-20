@@ -8,6 +8,7 @@ name: Version update runner
 on:
   pull_request:
     # На какие типы событий он должен работать
+    #types: [opened, synchronize, reopened, closed, assigned, unassigned, labeled, unlabeled, edited]
     types: [opened, synchronize, reopened, closed, assigned, unassigned, labeled, unlabeled, edited]
     branches:
       - release
@@ -28,4 +29,9 @@ jobs:
       - name: Current branch names2
         run: |
           echo "${{ steps.branch-names.outputs.current_branch }}"
+          echo "${{github.ref}}"
+          echo "${{github.ref_name}}"
+          echo "${{ steps.branch-names.outputs.default_branch }}"
+      - name: check if branch is start FEATURE 
+        if:  steps.branch-names.outputs.current_branch  == 'feature*'
         # Outputs: "feature/test" current PR branch.
