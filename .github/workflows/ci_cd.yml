@@ -39,13 +39,17 @@ jobs:
           
       - name: Check if bracnh contains FEATURE
         if:  ${{steps.branch-names.outputs.current_branch}}  == 'feature*'
-        run: echo " for feature"
+        run: echo " nothing"
+
+      - name: Check if bracnh contains FEATURE 1
+        if:  ${{steps.branch-names.outputs.current_branch == 'feature*' }}
+        run: echo " nothing"
 
       - name: Check if bracnh contains FEATURE 2
         if:  contains(${{ steps.branch-names.outputs.current_branch }},'feature')
-        run: echo "ech for feature 2"
+        run: echo "nothing"
 
       - name: Check if bracnh contains FEATURE 3
-        if:  ${{steps.branch-names.outputs.current_branch}}  == 'fe123ature'
-        run: echo "ech for feature 3"
+        if:  ${{steps.branch-names.outputs.current_branch  == 'fe123ature' }}
+        run: echo "nothing"
         # Outputs: "feature/test" current PR branch.
