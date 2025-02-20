@@ -1,0 +1,27 @@
+# Название вашего пайплайна
+name: Version update runner
+
+#Триггер на события, которые производятся по пушу или мерджу 
+# on:
+#   push:
+#     branches: [ "master", "develop" ]
+on:
+  pull_request:
+    # На какие типы событий он должен работать
+    types: [opened, synchronize, reopened, closed, assigned, unassigned, labeled, unlabeled, edited]
+    branches:
+      - release
+
+# Создаем job
+jobs:
+#Где запускаем
+  runs-on: ubuntu-latest
+#сами шаги запуска
+  steps:
+    - name: Check on existing VERSION file
+      shell: bash
+      run: echo "check VERSION file in ROOT directory"
+    - name: Extract branch name
+      shell: bash
+      run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+      id: extract_branch
