@@ -26,7 +26,7 @@ jobs:
         id: branch-names
         uses: tj-actions/branch-names@v8
       
-      - name: Current branch names2
+      - name: Print info
         run: |
           echo "EVENT NAME    : ${{ github.event_name }}"
           echo "ACTION        : ${{github.event.action }}"
@@ -39,13 +39,13 @@ jobs:
           
       - name: Check if bracnh contains FEATURE
         if:  ${{steps.branch-names.outputs.current_branch}}  == 'feature*'
-        run: "ech for feature"
+        run: echo " for feature"
 
       - name: Check if bracnh contains FEATURE 2
         if:  contains(${{ steps.branch-names.outputs.current_branch }},'feature')
-        run: "ech for feature 2"
+        run: echo "ech for feature 2"
 
       - name: Check if bracnh contains FEATURE 3
-        if:  ${{steps.branch-names.outputs.current_branch}}  == 'feature'
-        run: "ech for feature 3"
+        if:  ${{steps.branch-names.outputs.current_branch}}  == 'fe123ature'
+        run: echo "ech for feature 3"
         # Outputs: "feature/test" current PR branch.
