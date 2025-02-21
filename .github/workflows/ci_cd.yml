@@ -19,6 +19,9 @@ env:
 # Создаем job
 jobs:
   pre-merge-check:
+    outputs:
+      type_branch_f: ${{ steps.feature-branch.outputs.type_branch_f }}
+      type_branch_h: ${{ steps.hotfix-branch.outputs.type_branch_h }}
     runs-on: ubuntu-latest
     steps:
       - name: Check on existing VERSION file
@@ -46,15 +49,13 @@ jobs:
         if:  contains(steps.branch-names.outputs.current_branch,'feature')
         run: | 
           echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
-          echo "TYPE_BRANCH='feature'" >> $GITHUB_ENV
-          echo "TYPE_BRANCH_NEW='feature'" >> $GITHUB_ENV
+          echo "type_branch_f=feature" >> "$GITHUB_OUTPUT"
       - name: Провека на hotfix 
         id: hotfix-bracnh
         if:  contains(steps.branch-names.outputs.current_branch,'hotfix')
         run: | 
           echo "ЗАмержена ветка hotfix. Требуется произвести обновлении файла version в части патч версии"
-          echo "TYPE_BRANCH='hotfix'" >> $GITHUB_ENV
-          echo "TYPE_BRANCH_NEW='hotfix'" >> $GITHUB_ENV
+          echo "type_branch_h=hotfix" >> "$GITHUB_OUTPUT"
         
         
   # Проверка файла на наличие в репозитории 
@@ -77,10 +78,12 @@ jobs:
     needs: version-file-check
     steps:
         # обновляем минорную версию
-      - name: Check update version MINOR 
+      - name: Check update version MINOR
+      - env:
+          branch: ${{needs.pre-merge-check.outputs.type_branch_f}}
         run: | 
-          echo " t ${{ env.TYPE_BRANCH }}"
-          echo " new ${{ env.TYPE_BRANCH_NEW }}"
+          echo " t ${{ branch }}"
+          echo " new $branch"
         #if: ${{ env.TYPE_BRANCH == 'feature' }}
         #run: echo "Update minor version"
 
