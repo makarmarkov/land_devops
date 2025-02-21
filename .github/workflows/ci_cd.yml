@@ -66,13 +66,13 @@ jobs:
     #wait pre merge check 
     needs: pre-merge-check
     outputs:
-      output1: ${{ steps.get-info.outputs.content }}
+      output1: ${{steps.get-info.outputs.content}}
     #steps by step
     steps:
-      - name: Verify current directory 
+      - name: Search current directory
         run: pwd
 
-      - name: Print info about directory 
+      - name: Show artefact in dir  
         run: ls -la
 
         # checkout on release bacnh and 
@@ -84,10 +84,10 @@ jobs:
       - name: Print info about ${{env.NAME_VERSION_FILE}} 
         id: get-info
         run: |
-          content= $(cat ${{env.NAME_VERSION_FILE}})
-          echo "content=$content" >> "$GITHUB_OUTPUT"
+          content=$(cat ${{env.NAME_VERSION_FILE}})
+          echo "content='$content'" >> "$GITHUB_OUTPUT"
         
-  # Производим определение какую версию нам обновлять       
+  # start update vesion files       
   update-version-file:
     # IMPORTANT!
     permissions:
