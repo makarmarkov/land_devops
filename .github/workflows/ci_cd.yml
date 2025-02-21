@@ -53,8 +53,8 @@ jobs:
         if:  contains(steps.branch-names.outputs.current_branch,'hotfix')
         run: | 
           echo "ЗАмержена ветка hotfix. Требуется произвести обновлении файла version в части патч версии"
-          echo "TYPE_BRANCH='hotfix'" >> $GITHub_ENV
-          echo "TYPE_BRANCH_NEW='hotfix'" >> $GITHub_ENV
+          echo "TYPE_BRANCH='hotfix'" >> $GITHUB_ENV
+          echo "TYPE_BRANCH_NEW='hotfix'" >> $GITHUB_ENV
         
         
   # Проверка файла на наличие в репозитории 
