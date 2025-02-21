@@ -117,8 +117,7 @@ jobs:
       # here we will run py script for parse file 
       - name: save current date
         run: |
-          py --version
-          date >> ${{env.NAME_VERSION_FILE}}
+          echo "1.0.0" >> ${{env.NAME_VERSION_FILE}}
 
       # setup user which will be commit
       # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
