@@ -78,8 +78,11 @@ jobs:
     steps:
         # обновляем минорную версию
       - name: Check update version MINOR 
+        run: | 
+          echo "${{ env.TYPE_BRANCH }}"
+          echo "${{ env.TYPE_BRANCH_NEW }}"
         if: ${{ env.TYPE_BRANCH == 'feature' }}
-        run: echo "Update minor version"
+        #run: echo "Update minor version"
 
         # обновляем патч версию
       - name: Check update version PATCH 
