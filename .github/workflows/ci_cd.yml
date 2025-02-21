@@ -83,8 +83,7 @@ jobs:
         # обновляем минорную версию
       - name: Check update version MINOR
         run: | 
-          echo " t ${{ branch }}"
-          echo " new $branch"
+          echo " new $type_branch_f"
         #if: ${{ env.TYPE_BRANCH == 'feature' }}
         #run: echo "Update minor version"
 
