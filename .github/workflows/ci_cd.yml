@@ -16,7 +16,7 @@ env:
   TYPE_BRANCH: none
   NAME_VERSION_FILE: version
 
-# Создаем job
+#JOBS list for update versions 
 jobs:
   pre-merge-check:
     runs-on: ubuntu-latest
@@ -24,14 +24,13 @@ jobs:
       type_branch_f: ${{ steps.feature-branch.outputs.type_branch_f }}
       type_branch_h: ${{ steps.hotfix-branch.outputs.type_branch_h }}
     steps:
-      - name: Check on existing VERSION file
-        shell: bash
-        run: echo "check VERSION file in ROOT directory"
       
+      # use special lib for parse branch names 
       - name: Get branch names
         id: branch-names
         uses: tj-actions/branch-names@v8
       
+      # print info about variables and parsed branches
       - name: Print info
         id: print-info
         run: |
@@ -39,19 +38,21 @@ jobs:
           echo "ACTION        : ${{github.event.action }}"
           echo "EVENT NAME    : ${{ github.event_name }}"
           echo "IS            : ${{github.event.pull_request.merged}}"
-          echo "CURRENT BRACNH: ${{ steps.branch-names.outputs.current_branch }}"
+          echo "CURRENT BRANCH: ${{ steps.branch-names.outputs.current_branch }}"
           echo "REF           : ${{github.ref}}"
           echo "REF NAME      :${{github.ref_name}}"
           echo "DEFAULT BRANCH:${{ steps.branch-names.outputs.default_branch }}"
-                
-      - name: Провека на feature 
+      
+      # check if branch feature 
+      - name: Check [FEATURE]
         id: feature-branch
-        if:  contains(steps.branch-names.outputs.current_branch,'feature')
+        if: contains(steps.branch-names.outputs.current_branch,'feature')
         run: | 
           echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
           echo "type_branch_f=feature" >> "$GITHUB_OUTPUT"
-          
-      - name: Провека на hotfix 
+      
+      # TASK for check if branch hotfix
+      - name: Check [HOTFIX] 
         id: hotfix-branch
         if: contains(steps.branch-names.outputs.current_branch,'hotfix')
         run: | 
@@ -91,6 +92,30 @@ jobs:
       - name: Check update version PATCH 
         if: ${{ env.TYPE_BRANCH == 'hotfix' }}
         run: echo "Update hotfix version"
+      
+      # checkout on branch 
+      - name: checkout
+        uses: actions/checkout@v2
+
+      # save current date 
+      - name: save current date
+        run: |
+          date >> time.txt 
+
+      # setup user which will be commit
+      - name: setup git config
+        run: |
+          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+
+      #commit
+      - name: commit
+        run: |
+          # Stage the file, commit and push
+          git add .
+          git commit -m "update time.txt"
+          git push origin ${{ steps.branch-names.outputs.default_branch }}
 
       #   # Ничего не обновляем и выходим
       # - name: Check update version MINOR 
