@@ -46,8 +46,8 @@ jobs:
         if:  contains(steps.branch-names.outputs.current_branch,'feature')
         run: | 
           echo "ЗАмержена ветка Feature. Требуется произвести обновлении файла version в части минорной версии"
-          echo "TYPE_BRANCH='feature'" >> $GITHub_ENV
-          echo "TYPE_BRANCH_NEW='feature'" >> $GITHub_ENV
+          echo "TYPE_BRANCH='feature'" >> $GITHUB_ENV
+          echo "TYPE_BRANCH_NEW='feature'" >> $GITHUB_ENV
       - name: Провека на hotfix 
         id: hotfix-bracnh
         if:  contains(steps.branch-names.outputs.current_branch,'hotfix')
