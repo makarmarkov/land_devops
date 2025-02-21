@@ -78,10 +78,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: version-file-check
     steps:
-      - env:
-          branch: ${{needs.pre-merge-check.outputs.type_branch_f}}
         # обновляем минорную версию
       - name: Check update version MINOR
+        env:
+          branch: ${{needs.pre-merge-check.outputs.type_branch_f}}
         run: | 
           echo " t ${{ branch }}"
           echo " new $branch"
