@@ -63,9 +63,11 @@ jobs:
   # SHow VERSION FILE
   generate-version:
     runs-on: ubuntu-latest
-    # чего ждем. Т.е. начнем выполняться только после того, как отработает джоба, указанная выше
+    #wait pre merge check 
     needs: pre-merge-check
-    # постепенно выполняем шаги
+    outputs:
+      output1: ${{ steps.get-info.outputs.content }}
+    #steps by step
     steps:
       - name: Verify current directory 
         run: pwd
@@ -78,9 +80,12 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
-        #sho content of file 
+        #Show old content of version file 
       - name: Print info about ${{env.NAME_VERSION_FILE}} 
-        run: cat ${{env.NAME_VERSION_FILE}}
+        id: get-info
+        run: |
+          content= $(cat ${{env.NAME_VERSION_FILE}})
+          echo "content=$content" >> "$GITHUB_OUTPUT"
         
   # Производим определение какую версию нам обновлять       
   update-version-file:
@@ -89,13 +94,13 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     needs: generate-version
-    env:
-      type_branch_f: ${{needs.pre-merge-check.outputs.type_branch_f}}
     steps:
-        # обновляем минорную версию
+        # update minor version
       - name: Check update version MINOR
+        # env:
+        #   OUTPUT1: ${{needs.generate-version.outputs.output1}}
         run: | 
-          echo " new $type_branch_f"
+          echo " new ${{needs.generate-version.outputs.output1}}"
         #if: ${{ env.TYPE_BRANCH == 'feature' }}
         #run: echo "Update minor version"
 
