@@ -76,6 +76,8 @@ jobs:
         
   # Производим определение какую версию нам обновлять       
   update-version:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     needs: version-file-check
     env:
