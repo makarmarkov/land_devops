@@ -79,9 +79,9 @@ jobs:
         # обновляем минорную версию
       - name: Check update version MINOR 
         run: | 
-          echo "${{ env.TYPE_BRANCH }}"
-          echo "${{ env.TYPE_BRANCH_NEW }}"
-        if: ${{ env.TYPE_BRANCH == 'feature' }}
+          echo " t ${{ env.TYPE_BRANCH }}"
+          echo " new ${{ env.TYPE_BRANCH_NEW }}"
+        #if: ${{ env.TYPE_BRANCH == 'feature' }}
         #run: echo "Update minor version"
 
         # обновляем патч версию
@@ -89,12 +89,12 @@ jobs:
         if: ${{ env.TYPE_BRANCH == 'hotfix' }}
         run: echo "Update hotfix version"
 
-        # Ничего не обновляем и выходим
-      - name: Check update version MINOR 
-        if: ${{ env.TYPE_BRANCH == 'none' }}
-        run: | 
-          echo "Nothing to update"
-          exit 0
+      #   # Ничего не обновляем и выходим
+      # - name: Check update version MINOR 
+      #   if: ${{ env.TYPE_BRANCH == 'none' }}
+      #   run: | 
+      #     echo "Nothing to update"
+      #     # exit 0
               
       
     
