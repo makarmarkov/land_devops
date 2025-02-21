@@ -66,16 +66,14 @@ jobs:
     #wait pre merge check 
     needs: pre-merge-check
     outputs:
-      output1: ${{steps.get-info.outputs.content}}
+      data_in_file: ${{steps.get-info.outputs.content}}
     #steps by step
     steps:
+        # Show current directory 
       - name: Search current directory
         run: pwd
 
-      - name: Show artefact in dir  
-        run: ls -la
-
-        # checkout on release bacnh and 
+        # checkout on release branch and 
         # show content of version file 
       - name: checkout
         uses: actions/checkout@v2
@@ -87,7 +85,7 @@ jobs:
           content=$(cat ${{env.NAME_VERSION_FILE}})
           echo "content='$content'" >> "$GITHUB_OUTPUT"
         
-  # start update vesion files       
+  # start update version files       
   update-version-file:
     # IMPORTANT!
     permissions:
@@ -97,10 +95,11 @@ jobs:
     steps:
         # update minor version
       - name: Check update version MINOR
-        # env:
-        #   OUTPUT1: ${{needs.generate-version.outputs.output1}}
         run: | 
-          echo " new ${{needs.generate-version.outputs.output1}}"
+          echo "version=$(${{needs.generate-version.outputs.data_in_file}})" >> $GITHUB_ENV
+          echo "shortVersion=${version/'/""}" >> $GITHUB_ENV
+          echo "minor=$(echo $shortVersion | cut -d "." -f2)" >> $GITHUB_ENV
+          echo "old [$minor] -> new [(($minor++))]"
         #if: ${{ env.TYPE_BRANCH == 'feature' }}
         #run: echo "Update minor version"
 
@@ -115,7 +114,7 @@ jobs:
 
       # save current date 
       # here we will run py script for parse file 
-      - name: save current date
+      - name: Put new version [] to version file [${{env.NAME_VERSION_FILE}}]
         run: |
           echo "1.0.0" >> ${{env.NAME_VERSION_FILE}}
 
