@@ -115,7 +115,7 @@ jobs:
           # Stage the file, commit and push
           git add .
           git commit -m "update time.txt"
-          git push origin ${{ steps.branch-names.outputs.default_branch }}
+          git push origin release
 
       #   # Ничего не обновляем и выходим
       # - name: Check update version MINOR 
