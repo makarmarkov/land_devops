@@ -14,7 +14,8 @@ on:
       - release
 env:
   TYPE_BRANCH: none
-  NAME_VERSION_FILE: version
+  NAME_VERSION_FILE: version/version
+  RELEASE_BRACH: release
 
 #JOBS list for update versions 
 jobs:
@@ -35,30 +36,23 @@ jobs:
         id: print-info
         run: |
           echo "EVENT NAME    : ${{ github.event_name }}"
-          echo "ACTION        : ${{github.event.action }}"
+          echo "ACTION        : ${{ github.event.action }}"
           echo "EVENT NAME    : ${{ github.event_name }}"
-          echo "IS            : ${{github.event.pull_request.merged}}"
+          echo "IS            : ${{ github.event.pull_request.merged}}"
           echo "CURRENT BRANCH: ${{ steps.branch-names.outputs.current_branch }}"
-          echo "REF           : ${{github.ref}}"
-          echo "REF NAME      :${{github.ref_name}}"
-          echo "DEFAULT BRANCH:${{ steps.branch-names.outputs.default_branch }}"
+          echo "REF           : ${{ github.ref}}"
+          echo "REF NAME      : ${{ github.ref_name}}"
+          echo "DEFAULT BRANCH: ${{ steps.branch-names.outputs.default_branch }}"
+          echo "WOKSPACE      : ${{ github.workspace }} "
       
       # check if branch feature 
-      - name: Check [FEATURE]
+      - name: Check decalared branch 
         id: feature-branch
         if: contains(steps.branch-names.outputs.current_branch,'feature')
         run: | 
           echo "Merge [feature] -> [release]"
           echo "type_branch_f=feature" >> "$GITHUB_OUTPUT"
-      
-      # TASK for check if branch hotfix
-      - name: Check [HOTFIX] 
-        id: hotfix-branch
-        if: contains(steps.branch-names.outputs.current_branch,'hotfix')
-        run: | 
-          echo "Merge [hotfix] -> [release]"
-          echo "type_branch_h=hotfix" >> "$GITHUB_OUTPUT"
-        
+              
         
   # SHow VERSION FILE
   generate-version:
@@ -86,37 +80,41 @@ jobs:
           echo "content='$content'" >> "$GITHUB_OUTPUT"
         
   # start update version files       
-  update-version-file:
+  update-version:
     # IMPORTANT!
     permissions:
       contents: write
     runs-on: ubuntu-latest
     needs: generate-version
-    steps:
-        # update minor version
-      - name: Check update version MINOR
-        run: | 
-          echo "version=$(${{needs.generate-version.outputs.data_in_file}})" >> $GITHUB_ENV
-          echo "shortVersion=${version/'/""}" >> $GITHUB_ENV
-          echo "minor=$(echo $shortVersion | cut -d "." -f2)" >> $GITHUB_ENV
-          echo "old [$minor] -> new [(($minor++))]"
-        #if: ${{ env.TYPE_BRANCH == 'feature' }}
-        #run: echo "Update minor version"
+    steps:      
 
-        # обновляем патч версию
-      - name: Check update version PATCH 
-        if: ${{ env.TYPE_BRANCH == 'hotfix' }}
-        run: echo "Update hotfix version"
-      
+      # use special lib for parse branch names 
+      - name: Get branch names
+        id: branch-names
+        uses: tj-actions/branch-names@v8
+
       # checkout on branch 
       - name: checkout
         uses: actions/checkout@v2
+      
+      # Setup python env 
+      - name: Setup python 
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+          cache: "poetry"
 
-      # save current date 
-      # here we will run py script for parse file 
-      - name: Put new version [] to version file [${{env.NAME_VERSION_FILE}}]
-        run: |
-          echo "1.0.0" >> ${{env.NAME_VERSION_FILE}}
+      # update version if bracnh start with feature
+      - name: Update MINOR
+        if: startsWith(steps.branch-names.outputs.current_branch,'feature')
+        run: 
+          py version_up.py ${{ github.workspace }} minor
+      
+      # update version if bracnh start with feature
+      - name: Update PATCH
+        if: startsWith(steps.branch-names.outputs.current_branch,'feature')
+        run: 
+          py version_up.py ${{ github.workspace }} patch
 
       # setup user which will be commit
       # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
@@ -125,19 +123,23 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
 
-      #commit
+      # generate string for commit message 
+      - name: Get last version from version_log file 
+        id: get-commit-txt
+        run: | 
+          COMMIT_MSG=$(py version_up.py ${{ github.workspace }} version_log -1)
+          TAG_MSG=$(py version_up.py ${{ github.workspace }} version)
+          echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
+          echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_ENV
+
+      # add and push to remote repository 
       - name: commit modify [version] file
         run: |
           git add .
-          git commit -m "version up [x.x.x] <- [x.x.x]"
-          git push origin release
+          git commit -m "${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
+          git tag -a v${{ steps.get-commit-txt.outputs.TAG_MSG }} -m "update tag"
+          git push origin ${{ env.TYPE_BRANCH }} --tags 
 
-      #   # Ничего не обновляем и выходим
-      # - name: Check update version MINOR 
-      #   if: ${{ env.TYPE_BRANCH == 'none' }}
-      #   run: | 
-      #     echo "Nothing to update"
-      #     # exit 0
               
       
     
