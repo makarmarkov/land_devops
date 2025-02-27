@@ -54,30 +54,30 @@ jobs:
           echo "type_branch_f=feature" >> "$GITHUB_OUTPUT"
               
         
-  # SHow VERSION FILE
-  generate-version:
-    runs-on: ubuntu-latest
-    #wait pre merge check 
-    needs: pre-merge-check
-    outputs:
-      data_in_file: ${{steps.get-info.outputs.content}}
-    #steps by step
-    steps:
-        # Show current directory 
-      - name: Search current directory
-        run: pwd
+  # # SHow VERSION FILE
+  # generate-version:
+  #   runs-on: ubuntu-latest
+  #   #wait pre merge check 
+  #   needs: pre-merge-check
+  #   outputs:
+  #     data_in_file: ${{steps.get-info.outputs.content}}
+  #   #steps by step
+  #   steps:
+  #       # Show current directory 
+  #     - name: Search current directory
+  #       run: pwd
 
-        # checkout on release branch and 
-        # show content of version file 
-      - name: checkout
-        uses: actions/checkout@v2
+  #       # checkout on release branch and 
+  #       # show content of version file 
+  #     - name: checkout
+  #       uses: actions/checkout@v2
 
-        #Show old content of version file 
-      - name: Print info about ${{env.NAME_VERSION_FILE}} 
-        id: get-info
-        run: |
-          content=$(cat ${{env.NAME_VERSION_FILE}})
-          echo "content='$content'" >> "$GITHUB_OUTPUT"
+  #       #Show old content of version file 
+  #     - name: Print info about ${{env.NAME_VERSION_FILE}} 
+  #       id: get-info
+  #       run: |
+  #         content=$(cat ${{env.NAME_VERSION_FILE}})
+  #         echo "content='$content'" >> "$GITHUB_OUTPUT"
         
   # start update version files       
   update-version:
@@ -85,7 +85,7 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: generate-version
+    needs: pre-merge-check
     steps:      
 
       # use special lib for parse branch names 
@@ -108,13 +108,13 @@ jobs:
       - name: Update MINOR
         if: startsWith(steps.branch-names.outputs.current_branch,'feature')
         run: 
-          py version_up.py ${{ github.workspace }} minor
+          py version_up.py ${{ github.workspace }}${{ env.NAME_VERSION_FILE }} minor
       
       # update version if bracnh start with feature
       - name: Update PATCH
         if: startsWith(steps.branch-names.outputs.current_branch,'feature')
         run: 
-          py version_up.py ${{ github.workspace }} patch
+          py version_up.py ${{ github.workspace }}${{ env.NAME_VERSION_FILE }} patch
 
       # setup user which will be commit
       # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
@@ -127,8 +127,8 @@ jobs:
       - name: Get last version from version_log file 
         id: get-commit-txt
         run: | 
-          COMMIT_MSG=$(py version_up.py ${{ github.workspace }} version_log -1)
-          TAG_MSG=$(py version_up.py ${{ github.workspace }} version)
+          COMMIT_MSG=$(py version_up.py ${{ github.workspace }}${{ env.NAME_VERSION_FILE }} version_log -1)
+          TAG_MSG=$(py version_up.py ${{ github.workspace }}${{ env.NAME_VERSION_FILE }} version)
           echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
           echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_ENV
 
