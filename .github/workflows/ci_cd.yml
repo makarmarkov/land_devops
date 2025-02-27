@@ -92,45 +92,45 @@ jobs:
       - name: Get branch names
         id: branch-names
         uses: tj-actions/branch-names@v8
-
-      # checkout on branch 
-      - name: checkout
-        uses: actions/checkout@v2
       
       # Setup python env 
       - name: Setup python 
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
           cache: "poetry"
+      
+      # checkout on branch 
+      - name: checkout
+        uses: actions/checkout@v2
 
       # update version if bracnh start with feature
       - name: Update MINOR
         if: startsWith(steps.branch-names.outputs.current_branch,'feature')
         run: 
-          py version_up.py ${{ github.workspace }}${{ env.NAME_VERSION_FILE }} minor
+          py version_up.py ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }} minor
       
       # update version if bracnh start with feature
       - name: Update PATCH
         if: startsWith(steps.branch-names.outputs.current_branch,'feature')
         run: 
-          py version_up.py ${{ github.workspace }}${{ env.NAME_VERSION_FILE }} patch
+          py version_up.py ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }} patch
 
+      # generate variables for commit and tag 
+      - name: Get last version from version_log file 
+        id: get-commit-txt
+        run: | 
+          COMMIT_MSG=$(py version_up.py ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }} version_log -1)
+          TAG_MSG=$(py version_up.py ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }} version)
+          echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
+          echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_ENV
+      
       # setup user which will be commit
       # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
       - name: setup git config for github bot 
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
-
-      # generate string for commit message 
-      - name: Get last version from version_log file 
-        id: get-commit-txt
-        run: | 
-          COMMIT_MSG=$(py version_up.py ${{ github.workspace }}${{ env.NAME_VERSION_FILE }} version_log -1)
-          TAG_MSG=$(py version_up.py ${{ github.workspace }}${{ env.NAME_VERSION_FILE }} version)
-          echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
-          echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_ENV
 
       # add and push to remote repository 
       - name: commit modify [version] file
