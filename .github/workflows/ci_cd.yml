@@ -61,53 +61,60 @@ jobs:
         uses: tj-actions/branch-names@v8
 
       # checkout on branch 
-      - name: checkout on ${{env.RELEASE_BRACH}}
+      - name: Сheckout on [${{env.RELEASE_BRACH}}]
         uses: actions/checkout@v2
       
       # promt path to version file 
-      - name: promt variables 
+      - name: Promt catalog's info
         run : |
           echo "path to version file ${{ env.NAME_VERSION_FILE }}"
           ls -la 
           pwd
           
       # Setup python env 
-      - name: Setup python 
+      - name: Install and Setup python 
         uses: actions/setup-python@v1
         with:
           python-version: "3.10"
     
-      # update version if bracnh start with feature
+      # update version if branch start with feature
       - name: Update MINOR
         if: startsWith(steps.branch-names.outputs.current_branch,'feature')
         run: 
+          pwd
           python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} ${{ env.MINOR }}
-      
+          ls -la
       # update version if bracnh start with feature
       - name: Update PATCH
         if: startsWith(steps.branch-names.outputs.current_branch,'hotfix')
-        run: 
+        run:
+          pwd
           python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} ${{ env.PATCH }}
-
+          ls -la
       # generate variables for commit and tag 
-      - name: Get last version from version_log file 
+      - name: Get last version from [version_log] file 
         id: get-commit-txt
         run: | 
           COMMIT_MSG=$(python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} version_log -1)
           TAG_MSG=$(python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} version)
           echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
           echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_ENV
+          echo ${TAG_MSG}
+          echo ${COMMIT_MSG}
       
       # setup user which will be commit
       # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-      - name: setup git config
+      - name: Setup git config
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
 
       # add and push to remote repository 
-      - name: Update [${{env.NAME_VERSION_FILE}}}}] in files and put [${{ steps.get-commit-txt.outputs.TAG_MSG}}]
+      - name: Update [version] in files and put [${{ steps.get-commit-txt.outputs.TAG_MSG}}]
         run: |
+          pwd 
+          ls -la
+          git status 
           git add .
           git commit -m "${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
           git tag -a v${{ steps.get-commit-txt.outputs.TAG_MSG }} -m "update tag"
