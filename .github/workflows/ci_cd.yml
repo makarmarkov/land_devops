@@ -68,8 +68,6 @@ jobs:
       - name: Promt catalog's info
         run : |
           echo "path to version file ${{ env.NAME_VERSION_FILE }}"
-          ls -la 
-          pwd
           
       # Setup python env 
       - name: Install and Setup python 
@@ -78,19 +76,19 @@ jobs:
           python-version: "3.10"
     
       # update version if branch start with feature
-      - name: Update MINOR
+      - name: Update version [minor]
         if: startsWith(steps.branch-names.outputs.current_branch,'feature')
         run: 
           python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} ${{ env.MINOR }}
  
       # update version if bracnh start with feature
-      - name: Update PATCH
+      - name: Update version [patch]
         if: startsWith(steps.branch-names.outputs.current_branch,'hotfix')
         run:
           python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} ${{ env.PATCH }}
       
       # generate variables for commit and tag 
-      - name: Get last version from [version_log] file 
+      - name: Save Version and Log to env
         id: get-commit-txt
         run: | 
           ls -la
@@ -111,9 +109,6 @@ jobs:
       # add and push to remote repository 
       - name: Update [version] in files and put [${{ steps.get-commit-txt.outputs.TAG_MSG}}]
         run: |
-          pwd 
-          ls -la
-          git status 
           git add .
           git commit -m "v${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
           git tag -a v${{ steps.get-commit-txt.outputs.TAG_MSG }} -m "update tag"
