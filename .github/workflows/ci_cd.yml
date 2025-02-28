@@ -159,10 +159,10 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.tag}}
   
-  #notify to telegram chat
-  telegram-notify:
-    runs-on: ubuntu-latest
-    needs: docker-push
+  # #notify to telegram chat
+  # telegram-notify:
+  #   runs-on: ubuntu-latest
+  #   needs: docker-push
     
 
 
