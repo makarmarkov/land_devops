@@ -52,6 +52,8 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{steps.get-commit-txt.outputs.TAG_MSG}}
     needs: pre-merge-check
     steps:      
 
@@ -95,6 +97,7 @@ jobs:
           TAG_MSG=$(python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} version)
           echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
           echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_ENV
+          echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_OUTPUT
       
       # setup user which will be commit
       # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
@@ -136,7 +139,7 @@ jobs:
         run: | 
           echo "show variables"
       # checkout on branch 
-      - name: Сheckout on [${{env.RELEASE_BRACH}}]
+      - name: Сheckout on [${{env.RELEASE_BRACH}}] and v [${{needs.update-version.outputs.version}}]
         uses: actions/checkout@v2
 
       - name: Log in to Docker Hub
@@ -151,19 +154,8 @@ jobs:
           context: .
           file: ./dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.TAG_MSG}}
-      
-      # - name: Docker build image 
-      #   run: | 
-      #     echo "docker build . --file dockerfile --tag ${{secrets.DOCKER_HUB_LOGIN}}/repo_name:${{env.TAG_MSG}}"
+          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{needs.update-version.outputs.version}}
 
-      # - name: Docker show image  
-      #   run: | 
-      #     echo "show variables"
-      
-      # - name: Docker push image  
-      #   run: | 
-      #       echo "docker push ${{secrets.DOCKER_HUB_LOGIN}}/repo_name:${{env.TAG_MSG}}"
 
       
         
