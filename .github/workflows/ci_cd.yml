@@ -16,14 +16,12 @@ env:
   TYPE_BRANCH: none
   NAME_VERSION_FILE: version/version
   RELEASE_BRACH: release
-
+  MINOR: minor
+  PATCH: patch
 #JOBS list for update versions 
 jobs:
   pre-merge-check:
     runs-on: ubuntu-latest
-    outputs:
-      type_branch_f: ${{ steps.feature-branch.outputs.type_branch_f }}
-      type_branch_h: ${{ steps.hotfix-branch.outputs.type_branch_h }}
     steps:
       
       # use special lib for parse branch names 
@@ -45,13 +43,6 @@ jobs:
           echo "DEFAULT BRANCH: ${{ steps.branch-names.outputs.default_branch }}"
           echo "WOKSPACE      : ${{ github.workspace }} "
       
-      # check if branch feature 
-      - name: Check decalared branch 
-        id: feature-branch
-        if: contains(steps.branch-names.outputs.current_branch,'feature')
-        run: | 
-          echo "Merge [feature] -> [release]"
-          echo "type_branch_f=feature" >> "$GITHUB_OUTPUT"
               
         
   # # SHow VERSION FILE
@@ -92,29 +83,33 @@ jobs:
       - name: Get branch names
         id: branch-names
         uses: tj-actions/branch-names@v8
-      
-      # Setup python env 
-      - name: Setup python 
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: "poetry"
-      
-      # checkout on branch 
+
+           # checkout on branch 
       - name: checkout
         uses: actions/checkout@v2
+      
+      # promt path to version file 
+      - name: promt variables 
+        run : |
+          echo "path to version file ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }}"
 
+      # Setup python env 
+      - name: Setup python 
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.10"
+    
       # update version if bracnh start with feature
       - name: Update MINOR
         if: startsWith(steps.branch-names.outputs.current_branch,'feature')
         run: 
-          py version_up.py ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }} minor
+          py version_up.py ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }} ${{ env.MINOR }}
       
       # update version if bracnh start with feature
       - name: Update PATCH
-        if: startsWith(steps.branch-names.outputs.current_branch,'feature')
+        if: startsWith(steps.branch-names.outputs.current_branch,'hotfix')
         run: 
-          py version_up.py ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }} patch
+          py version_up.py ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }} ${{ env.PATCH }}
 
       # generate variables for commit and tag 
       - name: Get last version from version_log file 
@@ -133,7 +128,7 @@ jobs:
           git config user.email "<>"
 
       # add and push to remote repository 
-      - name: commit modify [version] file
+      - name: Update [Version] in files and put [TAG]
         run: |
           git add .
           git commit -m "${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
