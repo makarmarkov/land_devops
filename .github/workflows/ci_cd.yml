@@ -13,7 +13,6 @@ on:
     branches:
       - release
 env:
-  TYPE_BRANCH: none
   NAME_VERSION_FILE: ${{ github.workspace }}/version/version
   RELEASE_BRACH: release
   MINOR: minor
@@ -112,9 +111,9 @@ jobs:
           echo ${{ steps.get-commit-txt.outputs.TAG_MSG}}
           echo ${{ steps.get-commit-txt.outputs.COMMIT_MSG}}
           git add .
-          git commit -m "v${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
+          git commit -m "${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
           git tag -a v${{ steps.get-commit-txt.outputs.TAG_MSG }} -m "update tag"
-          git push origin ${{ env.TYPE_BRANCH }} --tags 
+          git push -u origin ${{ env.RELEASE_BRACH }} --tags 
 
               
       
