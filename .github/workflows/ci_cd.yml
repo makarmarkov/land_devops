@@ -18,7 +18,7 @@ env:
   RELEASE_BRACH: release
   MINOR: minor
   PATCH: patch
-  VERSION_UP: .github/workflow/version_up.py
+  VERSION_UP: .github/workflows/version_up.py
 
 #JOBS list for update versions 
 jobs:
