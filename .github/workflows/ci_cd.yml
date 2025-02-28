@@ -138,8 +138,9 @@ jobs:
       - name: Prepare env 
         run: | 
           echo "show variables"
+          echo [${{needs.update-version.outputs.tag}}]
       # checkout on branch 
-      - name: Сheckout on [${{env.RELEASE_BRACH}}] and v [${{needs.update-version.outputs.version}}]
+      - name: Сheckout on [${{env.RELEASE_BRACH}}] and v [${{needs.update-version.outputs.tag}}]
         uses: actions/checkout@v2
 
       - name: Log in to Docker Hub
@@ -154,7 +155,7 @@ jobs:
           context: .
           file: ./dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{needs.update-version.outputs.version}}
+          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{needs.update-version.outputs.tag}}
 
 
       
