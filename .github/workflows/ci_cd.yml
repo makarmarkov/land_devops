@@ -108,11 +108,11 @@ jobs:
       # add and push to remote repository 
       - name: Update [version] and put [tag]
         run: |
-          echo ${{ steps.get-commit-txt.outputs.TAG_MSG}}
-          echo ${{ steps.get-commit-txt.outputs.COMMIT_MSG}}
+          echo ${{ env.COMMIT_MSG }}
+          echo ${{ env.TAG_MSG }}
           git add .
-          git commit -m "${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
-          git tag -a v${{ steps.get-commit-txt.outputs.TAG_MSG }} -m "update tag"
+          git commit -m "${{ env.COMMIT_MSG }}"
+          git tag -a v${{ env.TAG_MSG }} -m "update tag"
           git push -u origin ${{ env.RELEASE_BRACH }} --tags 
 
               
