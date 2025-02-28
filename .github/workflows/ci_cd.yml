@@ -70,7 +70,6 @@ jobs:
           echo "path to version file ${{ env.NAME_VERSION_FILE }}"
           ls -la 
           pwd
-          python -version
           
       # Setup python env 
       - name: Setup python 
