@@ -93,6 +93,7 @@ jobs:
       - name: Get last version from [version_log] file 
         id: get-commit-txt
         run: | 
+          ls -la
           COMMIT_MSG=$(python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} version_log -1)
           TAG_MSG=$(python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} version)
           echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
@@ -114,7 +115,7 @@ jobs:
           ls -la
           git status 
           git add .
-          git commit -m "${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
+          git commit -m "v${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
           git tag -a v${{ steps.get-commit-txt.outputs.TAG_MSG }} -m "update tag"
           git push origin ${{ env.TYPE_BRANCH }} --tags 
 
