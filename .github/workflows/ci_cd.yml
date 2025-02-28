@@ -92,7 +92,9 @@ jobs:
       - name: promt variables 
         run : |
           echo "path to version file ${{ github.workspace }}/${{ env.NAME_VERSION_FILE }}"
-
+          ls -la 
+          pwd
+          
       # Setup python env 
       - name: Setup python 
         uses: actions/setup-python@v1
