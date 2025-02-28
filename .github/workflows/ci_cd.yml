@@ -151,7 +151,7 @@ jobs:
           context: .
           file: ./dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{end.REPO_NAME}}:v${{env.TAG_MSG}}
+          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.TAG_MSG}}
       
       # - name: Docker build image 
       #   run: | 
