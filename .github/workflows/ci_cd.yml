@@ -133,14 +133,16 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: changelog-update
+    needs: [changelog-update,update-version]
+    env: 
+      tag: ${{needs.update-version.outputs.tag}}
     steps:
       - name: Prepare env 
         run: | 
           echo "show variables"
-          echo [${{needs.update-version.outputs.tag}}]
+          echo [${{env.tag}}]
       # checkout on branch 
-      - name: Сheckout on [${{env.RELEASE_BRACH}}] and v [${{needs.update-version.outputs.tag}}]
+      - name: Сheckout on [${{env.RELEASE_BRACH}}] and v [${{env.tag}}]
         uses: actions/checkout@v2
 
       - name: Log in to Docker Hub
@@ -155,7 +157,7 @@ jobs:
           context: .
           file: ./dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{needs.update-version.outputs.tag}}
+          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.tag}}
 
 
       
