@@ -38,10 +38,10 @@ jobs:
           echo "EVENT NAME    : ${{ github.event_name }}"
           echo "ACTION        : ${{ github.event.action }}"
           echo "EVENT NAME    : ${{ github.event_name }}"
-          echo "IS            : ${{ github.event.pull_request.merged}}"
+          echo "IS            : ${{ github.event.pull_request.merged }}"
           echo "CURRENT BRANCH: ${{ steps.branch-names.outputs.current_branch }}"
-          echo "REF           : ${{ github.ref}}"
-          echo "REF NAME      : ${{ github.ref_name}}"
+          echo "REF           : ${{ github.ref }}"
+          echo "REF NAME      : ${{ github.ref_name }}"
           echo "DEFAULT BRANCH: ${{ steps.branch-names.outputs.default_branch }}"
           echo "WOKSPACE      : ${{ github.workspace }} "
       
@@ -158,6 +158,12 @@ jobs:
           file: ./dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.tag}}
+  
+  #notify to telegram chat
+  telegram-notify:
+    runs-on: ubuntu-latest
+    needs: docker-push
+    
 
 
       
