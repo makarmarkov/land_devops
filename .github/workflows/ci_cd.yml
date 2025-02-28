@@ -81,16 +81,14 @@ jobs:
       - name: Update MINOR
         if: startsWith(steps.branch-names.outputs.current_branch,'feature')
         run: 
-          pwd
           python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} ${{ env.MINOR }}
-          ls -la
+ 
       # update version if bracnh start with feature
       - name: Update PATCH
         if: startsWith(steps.branch-names.outputs.current_branch,'hotfix')
         run:
-          pwd
           python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} ${{ env.PATCH }}
-          ls -la
+      
       # generate variables for commit and tag 
       - name: Get last version from [version_log] file 
         id: get-commit-txt
