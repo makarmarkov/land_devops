@@ -95,8 +95,6 @@ jobs:
           TAG_MSG=$(python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} version)
           echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
           echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_ENV
-          echo ${TAG_MSG}
-          echo ${COMMIT_MSG}
       
       # setup user which will be commit
       # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
@@ -108,8 +106,6 @@ jobs:
       # add and push to remote repository 
       - name: Update [version] and put [tag]
         run: |
-          echo ${{ env.COMMIT_MSG }}
-          echo ${{ env.TAG_MSG }}
           git add .
           git commit -m "${{ env.COMMIT_MSG }}"
           git tag -a v${{ env.TAG_MSG }} -m "update tag"
