@@ -107,8 +107,10 @@ jobs:
           git config user.email "<>"
 
       # add and push to remote repository 
-      - name: Update [version] in files and put [${{ steps.get-commit-txt.outputs.TAG_MSG}}]
+      - name: Update [version] and put [tag]
         run: |
+          echo ${{ steps.get-commit-txt.outputs.TAG_MSG}}
+          echo ${{ steps.get-commit-txt.outputs.COMMIT_MSG}}
           git add .
           git commit -m "v${{ steps.get-commit-txt.outputs.COMMIT_MSG }}"
           git tag -a v${{ steps.get-commit-txt.outputs.TAG_MSG }} -m "update tag"
