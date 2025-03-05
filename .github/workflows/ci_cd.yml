@@ -19,6 +19,8 @@ env:
   PATCH: patch
   VERSION_UP: .github/workflows/version_up.py
   REPO_NAME: ${{ github.event.repository.name }}
+  PR_NUMBER: ${{ github.event.number }}
+  URL_REPO: ${{ github.server_url }}/${{ github.repository }}
 
 #JOBS list for update versions 
 jobs:
@@ -167,10 +169,25 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            Результат прохождения тестов.
-            Статус       : Успешно ✅
-            Кол-во тестов: 0 
-            Ссылка на действие: ${{ github.action }} 
+            GitHub (https://github.com/makarmarkov/land_devops/releases/tag/v0.6.0)
+            Release v0.6.0 · makarmarkov/land_devops
+            update tag
+            
+            Новый выпуск изменений
+            Обновление проекта Название проекта
+            Проект : land_devops
+            Версия : 0.6.0
+            Дата: 28.02.2024 17:33:44
+            
+            Информация о репозитории
+            GIT MR : 71 (https://github.com/makarmarkov/land_devops/pull/71)
+            GIT TAG: 0.6.0 (https://github.com/makarmarkov/land_devops/releases/tag/v0.6.0)
+            
+            Информация о Docker
+            Владелец: makarmarkov  (https://hub.docker.com/repositories/makarmarkov)
+            Название: land_devops (https://hub.docker.com/repository/docker/makarmarkov/land_devops/general)
+            Тег: v0.6.0 (https://hub.docker.com/repository/docker/makarmarkov/land_devops/tags)
+            Полное имя: makarmarkov/land_devops:v0.6.0 (https://hub.docker.com/repository/docker/makarmarkov/land_devops/tags/v0.6.0/sha256:07451c2658178285458b52572db3aa7d1dccf7caac22a801e37ca73b27206576)
   
 
 
@@ -205,7 +222,55 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.tag}}
   
- 
+  # telegram notify about all tests
+  final-notify:
+    needs: tests-fixme
+    runs-on: ubuntu-latest
+    steps:
+      # use special lib for parse branch names 
+      - name: Get branch names
+        id: branch-names
+        uses: tj-actions/branch-names@v8
+
+      # use for get time value
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYYMMDD-HH
+          utcOffset: "+08:00"
+      
+      #print info about time
+      - name: Use current time
+        env:
+          TIME: "${{ steps.current-time.outputs.time }}"
+          R_TIME: "${{ steps.current-time.outputs.readableTime }}"
+          F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
+          YEAR: "${{ steps.current-time.outputs.year }}"
+          DAY: "${{ steps.current-time.outputs.day }}"
+        run: echo $TIME $R_TIME $F_TIME $YEAR $DAY
+      
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |           
+            Новый выпуск изменений
+            <b>Проект</b> : ${{ env.REPO_NAME }}
+            <b>Версия</b> : ${{ steps.branch-names.outputs.tag }}
+            <b>Дата</b>: 28.02.2024 17:33:44
+            
+            Информация о репозитории
+            <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
+            <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{ steps.branch-names.outputs.tag }}</a>
+            
+            Информация о Docker
+            <b>Владелец</b>: makarmarkov  (https://hub.docker.com/repositories/makarmarkov)
+            <b>Название</b>: land_devops (https://hub.docker.com/repository/docker/makarmarkov/land_devops/general)
+            <b>Тег</b>: v${{ steps.branch-names.outputs.tag }} (https://hub.docker.com/repository/docker/makarmarkov/land_devops/tags)
+            <b>Полное имя</b>: ${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{ steps.branch-names.outputs.tag }}
+  
     
 
 
