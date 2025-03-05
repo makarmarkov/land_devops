@@ -169,26 +169,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           message: |
-            GitHub (https://github.com/makarmarkov/land_devops/releases/tag/v0.6.0)
-            Release v0.6.0 · makarmarkov/land_devops
-            update tag
-            
-            Новый выпуск изменений
-            Обновление проекта Название проекта
-            Проект : land_devops
-            Версия : 0.6.0
-            Дата: 28.02.2024 17:33:44
-            
-            Информация о репозитории
-            GIT MR : 71 (https://github.com/makarmarkov/land_devops/pull/71)
-            GIT TAG: 0.6.0 (https://github.com/makarmarkov/land_devops/releases/tag/v0.6.0)
-            
-            Информация о Docker
-            Владелец: makarmarkov  (https://hub.docker.com/repositories/makarmarkov)
-            Название: land_devops (https://hub.docker.com/repository/docker/makarmarkov/land_devops/general)
-            Тег: v0.6.0 (https://hub.docker.com/repository/docker/makarmarkov/land_devops/tags)
-            Полное имя: makarmarkov/land_devops:v0.6.0 (https://hub.docker.com/repository/docker/makarmarkov/land_devops/tags/v0.6.0/sha256:07451c2658178285458b52572db3aa7d1dccf7caac22a801e37ca73b27206576)
-  
+            Тестирование пройдено
 
 
   # build docker image and push to registry
@@ -224,7 +205,7 @@ jobs:
   
   # telegram notify about all tests
   final-notify:
-    needs: tests-fixme
+    needs: docker-push
     runs-on: ubuntu-latest
     steps:
       # use special lib for parse branch names 
@@ -255,11 +236,12 @@ jobs:
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: html
           message: |           
             Новый выпуск изменений
             <b>Проект</b> : ${{ env.REPO_NAME }}
             <b>Версия</b> : ${{ steps.branch-names.outputs.tag }}
-            <b>Дата</b>: 28.02.2024 17:33:44
+            <b>Дата</b>: ${{ steps.current-time.outputs.readableTime }}
             
             Информация о репозитории
             <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
