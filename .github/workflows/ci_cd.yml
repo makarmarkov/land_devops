@@ -203,7 +203,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.tag}}
   
-  # telegram notify about all tests
+  # Final notify about all release pack
   final-notify:
     needs: [docker-push,update-version]
     env: 
@@ -232,28 +232,34 @@ jobs:
           YEAR: "${{ steps.current-time.outputs.year }}"
           DAY: "${{ steps.current-time.outputs.day }}"
         run: echo $TIME $R_TIME $F_TIME $YEAR $DAY
+
+      # checkout on branch 
+      - name: Checkout on release
+        uses: actions/checkout@v2
       
+      # genearate message and notify 
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
+          document: 
           message: |           
             Новый выпуск изменений
-            <b>Проект</b> : ${{ env.REPO_NAME }}
-            <b>Версия</b> : ${{env.tag}}
-            <b>Дата</b>: ${{ steps.current-time.outputs.formattedTime }}
+            <b>Проект</b> : <code>${{ env.REPO_NAME }}</code>
+            <b>Версия</b> : <code>${{env.tag}}</code>
+            <b>Дата</b>: <code>${{ steps.current-time.outputs.formattedTime }}</code>
             
-            Информация о репозитории
+            Информация о Git-репозитории
             <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
             <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{env.tag}}</a>
             
-            Информация о Docker
+            Информация о Docker-репозитории
             <b>Владелец</b>: <a href="https://hub.docker.com/repositories/${{ secrets.DOCKER_HUB_LOGIN }}">${{ secrets.DOCKER_HUB_LOGIN }}</a>
-            <b>Название</b>: <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ env.REPO_NAME }}</a>
-            <b>Тег</b>: <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{env.tag}}</a>
-            <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}</a>
+            <b>Название</b>: <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ env.REPO_NAME }}</a>
+            <b>Тег</b>: <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags/v">${{env.tag}}</a>
+            <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags">v${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}</a>
   
     
 
