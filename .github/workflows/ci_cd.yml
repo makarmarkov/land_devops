@@ -218,7 +218,7 @@ jobs:
         uses: josStorer/get-current-time@v2
         id: current-time
         with:
-          format: YYYYMMDD-HH
+          format: YYYY.MM.DD-HH:mm:ss
           utcOffset: "+08:00"
       
       #print info about time
@@ -245,13 +245,13 @@ jobs:
             
             Информация о репозитории
             <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
-            <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{ steps.branch-names.outputs.tag }}</a>
+            <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{ steps.branch-names.outputs.tag }} 123</a>
             
             Информация о Docker
-            <b>Владелец</b>: makarmarkov  (https://hub.docker.com/repositories/makarmarkov)
-            <b>Название</b>: land_devops (https://hub.docker.com/repository/docker/makarmarkov/land_devops/general)
-            <b>Тег</b>: v${{ steps.branch-names.outputs.tag }} (https://hub.docker.com/repository/docker/makarmarkov/land_devops/tags)
-            <b>Полное имя</b>: ${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{ steps.branch-names.outputs.tag }}
+            <b>Владелец</b>: <a href="https://hub.docker.com/repositories/${{ secrets.DOCKER_HUB_LOGIN }}">${{ secrets.DOCKER_HUB_LOGIN }}</a>
+            <b>Название</b>: <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ env.REPO_NAME }}</a>
+            <b>Тег</b>: <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general"> 1123</a>
+            <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{ steps.branch-names.outputs.tag }}</a>
   
     
 
