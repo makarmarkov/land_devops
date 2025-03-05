@@ -205,7 +205,9 @@ jobs:
   
   # telegram notify about all tests
   final-notify:
-    needs: docker-push
+    needs: [docker-push,update-version]
+    env: 
+      tag: ${{needs.update-version.outputs.tag}}
     runs-on: ubuntu-latest
     steps:
       # use special lib for parse branch names 
@@ -240,18 +242,18 @@ jobs:
           message: |           
             Новый выпуск изменений
             <b>Проект</b> : ${{ env.REPO_NAME }}
-            <b>Версия</b> : ${{ steps.branch-names.outputs.tag }}
-            <b>Дата</b>: ${{ steps.current-time.outputs.readableTime }}
+            <b>Версия</b> : ${{env.tag}}
+            <b>Дата</b>: ${{ steps.current-time.outputs.formattedTime }}
             
             Информация о репозитории
             <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
-            <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{ steps.branch-names.outputs.tag }} 123</a>
+            <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{env.tag}}</a>
             
             Информация о Docker
             <b>Владелец</b>: <a href="https://hub.docker.com/repositories/${{ secrets.DOCKER_HUB_LOGIN }}">${{ secrets.DOCKER_HUB_LOGIN }}</a>
             <b>Название</b>: <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ env.REPO_NAME }}</a>
-            <b>Тег</b>: <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general"> 1123</a>
-            <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{ steps.branch-names.outputs.tag }}</a>
+            <b>Тег</b>: <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{env.tag}}</a>
+            <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}</a>
   
     
 
