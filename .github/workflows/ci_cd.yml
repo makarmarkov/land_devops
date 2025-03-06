@@ -315,9 +315,11 @@ jobs:
     needs: [final-notify,update-version]
     env: 
       tag: ${{needs.update-version.outputs.tag}}
-    uses: ./.github/workflows/deploy.yml
-    with: 
-      version: ${{env.tag}}
+    steps:
+      - name: my workflow
+        uses: ./.github/workflows/deploy.yml
+        with: 
+          version: ${{env.tag}}
 
 
       
