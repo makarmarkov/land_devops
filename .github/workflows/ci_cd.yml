@@ -328,7 +328,6 @@ jobs:
       #trigger another workflow 
       - name: Trigger another workflow
         uses: ./github/workflows/deploy.yml
-        secrets: inherit
         with: 
           version: ${{env.tag}}
 
