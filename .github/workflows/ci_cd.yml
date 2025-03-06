@@ -325,7 +325,7 @@ jobs:
           echo "all normal"
   
   deploy-test: 
-    needs: [deploy-dev,final-notify] 
+    needs: [final-notify] 
     runs-on: ubuntu-latest
     name: (DEP) Deploy TEST
     steps:
@@ -334,7 +334,7 @@ jobs:
           echo "all normal"
 
   deploy-stage: 
-    needs: [deploy-test,final-notify]
+    needs: [deploy-test]
     runs-on: ubuntu-latest
     name: (DEP) Deploy STAGE
     steps:
@@ -343,7 +343,7 @@ jobs:
           echo "all normal"
 
   deploy-prod: 
-    needs: [deploy-stage] 
+    needs: [deploy-test] 
     runs-on: ubuntu-latest
     name: (DEP) Deploy PROD
     steps:
