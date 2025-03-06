@@ -12,6 +12,14 @@ on:
     types: [closed]
     branches:
       - release
+    workflow_call:
+    inputs:
+      username:
+        description: 'A username passed from the caller workflow'
+        default: 'john-doe'
+        required: false
+        type: string
+        
 env:
   NAME_VERSION_FILE: ${{ github.workspace }}/version/version
   RELEASE_BRACH: release
@@ -25,6 +33,7 @@ env:
 #JOBS list for update versions 
 jobs:
   pre-merge-check:
+    name: (INF) Print INFORMATIOn
     runs-on: ubuntu-latest
     steps:
       
@@ -61,9 +70,36 @@ jobs:
       with:
         full: '--full'
 
+  lint: 
+    needs: pre-merge-check 
+    runs-on: ubuntu-latest
+    name: (SEC) Lint
+    steps:
+    - uses: actions/checkout@v3
+      run : | 
+        echo "all normal"
+  saas: 
+    needs: pre-merge-check 
+    runs-on: ubuntu-latest
+    name: (SEC) SAAS
+    steps:
+    - uses: actions/checkout@v3
+      run : | 
+        echo "all normal"
+
+  dast: 
+    needs: pre-merge-check 
+    runs-on: ubuntu-latest
+    name: (SEC) DAST
+    steps:
+    - uses: actions/checkout@v3
+      run : | 
+        echo "all normal"
+
   # start update version files       
   update-version:
-    needs: antivirus
+    name: (VER) Version UP
+    needs: [antivirus, saas, dast]
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -130,6 +166,7 @@ jobs:
   
   # create changelog file and put data to file 
   changelog-fixme:
+    name: (VER) Chagelog UP
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -144,6 +181,7 @@ jobs:
 
   # create changelog file and put data to file 
   build-fixme:
+    name: (CI) Build
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -158,10 +196,11 @@ jobs:
 
   # create changelog file and put data to file 
   tests-fixme:
+    name: (CI) Test
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: changelog-fixme
+    needs: build-fixme
     steps:
       - name: Prepare enviroments
         run: |
@@ -172,6 +211,7 @@ jobs:
   
   # telegram notify about all tests
   tests-notify:
+    name: (TG) Notify test
     needs: tests-fixme
     runs-on: ubuntu-latest
     steps:
@@ -186,6 +226,7 @@ jobs:
 
   # build docker image and push to registry
   docker-push:
+    name: (CI) Docker push
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -217,6 +258,7 @@ jobs:
   
   # Final notify about all release pack
   final-notify:
+    name: (TG) Notify final
     needs: [docker-push,update-version]
     env: 
       tag: ${{needs.update-version.outputs.tag}}
@@ -232,7 +274,7 @@ jobs:
         uses: josStorer/get-current-time@v2
         id: current-time
         with:
-          format: YYYY.MM.DD-HH:mm:ss
+          format: YYYY.MM.DD HH:mm:ss
           utcOffset: "+08:00"
       
       #print info about time
@@ -259,13 +301,13 @@ jobs:
           document: 
           message: |           
             Новый выпуск изменений
-            <code><b>Проект</b> : ${{ env.REPO_NAME }}</code>
-            <code><b>Версия</b> : ${{env.tag}}</code>
-            <code><b>Дата</b>: ${{ steps.current-time.outputs.formattedTime }}</code>
+            <b>Проект</b> : <code>${{ env.REPO_NAME }}</code>
+            <b>Версия</b> : <code>${{env.tag}}</code>
+            <b>Дата</b>: <code>${{ steps.current-time.outputs.formattedTime }}</code>
             
             Информация о Git-репозитории
-            <code><b>GIT MR</b></code> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
-            <code><b>GIT TAG</b></code>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{env.tag}}</a>
+            <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
+            <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{env.tag}}</a>
             
             Информация о Docker-репозитории
             <b>Владелец</b>: <a href="https://hub.docker.com/repositories/${{ secrets.DOCKER_HUB_LOGIN }}">${{ secrets.DOCKER_HUB_LOGIN }}</a>
