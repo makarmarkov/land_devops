@@ -5,7 +5,7 @@ on:
     # which is better for matrix strategies.
     # If you prefer to have flow1 define outputs, check the docs for an example.
     inputs:  
-      FOO:
+      version:
         type: string
         required: true
 
