@@ -10,7 +10,7 @@ on:
         required: true
 
 jobs: 
-    deploy-dev: 
+  deploy-dev: 
     runs-on: ubuntu-latest
     name: (DEP) Deploy DEV
     steps:
