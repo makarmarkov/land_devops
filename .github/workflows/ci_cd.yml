@@ -316,15 +316,8 @@ jobs:
       tag: ${{needs.update-version.outputs.tag}}
     runs-on: ubuntu-latest
     steps:
-      #generate app token 
-      # - name: Generate GitHub App token
-      #   id: generate_token
-      #   uses: actions/create-github-app-token@v1
-      #   with:
-      #     app_id: ${{ secrets.APP_ID }}
-      #     private_key: ${{ secrets.APP_PRIVATE_KEY }}
       - name: Сheckout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       #trigger another workflow 
       - name: Trigger another workflow
         uses: ./github/workflows/deploy.yml
