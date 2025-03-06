@@ -311,6 +311,7 @@ jobs:
   
   #calling another workflows
   call-deploy:
+    runs-on: ubuntu-latest
     name: Calling deploy workflow
     needs: [final-notify,update-version]
     env: 
