@@ -315,15 +315,9 @@ jobs:
     needs: [final-notify,update-version]
     env: 
       tag: ${{needs.update-version.outputs.tag}}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Сheckout
-        uses: actions/checkout@v2
-      #trigger another workflow 
-      - name: Trigger another workflow
-        uses: makarmarkov/land_devops/./github/workflows/deploy.yml@release
-        with: 
-          version: ${{env.tag}}
+    uses: makarmarkov/land_devops/./github/workflows/deploy.yml@release
+    with: 
+      version: ${{env.tag}}
 
 
       
