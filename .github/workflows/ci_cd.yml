@@ -259,7 +259,7 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
-          document: 
+          document: ./version/version/version
           message: |           
             Новый выпуск изменений
             <b>Проект</b> : <code>${{ env.REPO_NAME }}</code>
