@@ -317,13 +317,13 @@ jobs:
   
   #calling another workflows
   call-deploy:
-    - name: Calling deploy
-      steps:
-        - uses: actions/checkout@v3 # Necessary to access local action   
-        - uses: ./github/workflows/deploy.yml
-          secrets: inherit
-          with: 
-            FOO: bar
+    name: Calling deploy
+    steps:
+      - uses: actions/checkout@v3 # Necessary to access local action   
+      - uses: ./github/workflows/deploy.yml
+        secrets: inherit
+        with: 
+          FOO: bar
 
 
       
