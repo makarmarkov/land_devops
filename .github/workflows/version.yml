@@ -1,3 +1,0 @@
-name: Check and update verion 
-on:
-  workflow_call:
