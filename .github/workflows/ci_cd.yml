@@ -49,8 +49,9 @@ jobs:
   
   # antivirus scanning
   antivirus: 
+    needs: pre-merge-check 
     runs-on: ubuntu-latest
-    name: History AV Scan
+    name: [SEC] antivirus
     steps:
     - uses: actions/checkout@v3
       with:
@@ -64,13 +65,12 @@ jobs:
 
   # start update version files       
   update-version:
-    # IMPORTANT!
+    needs: antivirus
     permissions:
       contents: write
     runs-on: ubuntu-latest
     outputs:
       tag: ${{steps.get-commit-txt.outputs.TAG_MSG}}
-    needs: pre-merge-check
     steps:      
 
       # use special lib for parse branch names 
@@ -261,13 +261,13 @@ jobs:
           document: 
           message: |           
             Новый выпуск изменений
-            <b>Проект</b> : <code>${{ env.REPO_NAME }}</code>
-            <b>Версия</b> : <code>${{env.tag}}</code>
-            <b>Дата</b>: <code>${{ steps.current-time.outputs.formattedTime }}</code>
+            <code><b>Проект</b> : ${{ env.REPO_NAME }}</code>
+            <code><b>Версия</b> : ${{env.tag}}</code>
+            <code><b>Дата</b>: ${{ steps.current-time.outputs.formattedTime }}</code>
             
             Информация о Git-репозитории
-            <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
-            <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{env.tag}}</a>
+            <code><b>GIT MR</b></code> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
+            <code><b>GIT TAG</b></code>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{env.tag}}</a>
             
             Информация о Docker-репозитории
             <b>Владелец</b>: <a href="https://hub.docker.com/repositories/${{ secrets.DOCKER_HUB_LOGIN }}">${{ secrets.DOCKER_HUB_LOGIN }}</a>
