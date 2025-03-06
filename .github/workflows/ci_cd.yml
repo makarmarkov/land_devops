@@ -1,5 +1,5 @@
 # Название вашего пайплайна
-name: Version update runner
+name: Automate Version and Push to Docker
 
 #Триггер на события, которые производятся по пушу или мерджу 
 # on:
@@ -13,16 +13,19 @@ on:
     branches:
       - release
 env:
-  TYPE_BRANCH: none
-  NAME_VERSION_FILE: version
+  NAME_VERSION_FILE: ${{ github.workspace }}/version/version
+  RELEASE_BRACH: release
+  MINOR: minor
+  PATCH: patch
+  VERSION_UP: .github/workflows/version_up.py
+  REPO_NAME: ${{ github.event.repository.name }}
+  PR_NUMBER: ${{ github.event.number }}
+  URL_REPO: ${{ github.server_url }}/${{ github.repository }}
 
 #JOBS list for update versions 
 jobs:
   pre-merge-check:
     runs-on: ubuntu-latest
-    outputs:
-      type_branch_f: ${{ steps.feature-branch.outputs.type_branch_f }}
-      type_branch_h: ${{ steps.hotfix-branch.outputs.type_branch_h }}
     steps:
       
       # use special lib for parse branch names 
@@ -35,110 +38,235 @@ jobs:
         id: print-info
         run: |
           echo "EVENT NAME    : ${{ github.event_name }}"
-          echo "ACTION        : ${{github.event.action }}"
+          echo "ACTION        : ${{ github.event.action }}"
           echo "EVENT NAME    : ${{ github.event_name }}"
-          echo "IS            : ${{github.event.pull_request.merged}}"
+          echo "IS            : ${{ github.event.pull_request.merged }}"
           echo "CURRENT BRANCH: ${{ steps.branch-names.outputs.current_branch }}"
-          echo "REF           : ${{github.ref}}"
-          echo "REF NAME      :${{github.ref_name}}"
-          echo "DEFAULT BRANCH:${{ steps.branch-names.outputs.default_branch }}"
+          echo "REF           : ${{ github.ref }}"
+          echo "REF NAME      : ${{ github.ref_name }}"
+          echo "DEFAULT BRANCH: ${{ steps.branch-names.outputs.default_branch }}"
+          echo "WOKSPACE      : ${{ github.workspace }} "
       
-      # check if branch feature 
-      - name: Check [FEATURE]
-        id: feature-branch
-        if: contains(steps.branch-names.outputs.current_branch,'feature')
-        run: | 
-          echo "Merge [feature] -> [release]"
-          echo "type_branch_f=feature" >> "$GITHUB_OUTPUT"
-      
-      # TASK for check if branch hotfix
-      - name: Check [HOTFIX] 
-        id: hotfix-branch
-        if: contains(steps.branch-names.outputs.current_branch,'hotfix')
-        run: | 
-          echo "Merge [hotfix] -> [release]"
-          echo "type_branch_h=hotfix" >> "$GITHUB_OUTPUT"
-        
-        
-  # SHow VERSION FILE
-  generate-version:
-    runs-on: ubuntu-latest
-    #wait pre merge check 
-    needs: pre-merge-check
-    outputs:
-      data_in_file: ${{steps.get-info.outputs.content}}
-    #steps by step
-    steps:
-        # Show current directory 
-      - name: Search current directory
-        run: pwd
-
-        # checkout on release branch and 
-        # show content of version file 
-      - name: checkout
-        uses: actions/checkout@v2
-
-        #Show old content of version file 
-      - name: Print info about ${{env.NAME_VERSION_FILE}} 
-        id: get-info
-        run: |
-          content=$(cat ${{env.NAME_VERSION_FILE}})
-          echo "content='$content'" >> "$GITHUB_OUTPUT"
         
   # start update version files       
-  update-version-file:
+  update-version:
     # IMPORTANT!
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: generate-version
-    steps:
-        # update minor version
-      - name: Check update version MINOR
-        run: | 
-          echo "version=$(${{needs.generate-version.outputs.data_in_file}})" >> $GITHUB_ENV
-          echo "shortVersion=${version/'/""}" >> $GITHUB_ENV
-          echo "minor=$(echo $shortVersion | cut -d "." -f2)" >> $GITHUB_ENV
-          echo "old [$minor] -> new [(($minor++))]"
-        #if: ${{ env.TYPE_BRANCH == 'feature' }}
-        #run: echo "Update minor version"
+    outputs:
+      tag: ${{steps.get-commit-txt.outputs.TAG_MSG}}
+    needs: pre-merge-check
+    steps:      
 
-        # обновляем патч версию
-      - name: Check update version PATCH 
-        if: ${{ env.TYPE_BRANCH == 'hotfix' }}
-        run: echo "Update hotfix version"
-      
+      # use special lib for parse branch names 
+      - name: Get branch names
+        id: branch-names
+        uses: tj-actions/branch-names@v8
+
       # checkout on branch 
-      - name: checkout
+      - name: Сheckout on [${{env.RELEASE_BRACH}}]
         uses: actions/checkout@v2
-
-      # save current date 
-      # here we will run py script for parse file 
-      - name: Put new version [] to version file [${{env.NAME_VERSION_FILE}}]
-        run: |
-          echo "1.0.0" >> ${{env.NAME_VERSION_FILE}}
-
+      
+      # promt path to version file 
+      - name: Promt catalog's info
+        run : |
+          echo "path to version file ${{ env.NAME_VERSION_FILE }}"
+          
+      # Setup python env 
+      - name: Install and Setup python 
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.10"
+    
+      # update version if branch start with feature
+      - name: Update version [minor]
+        if: startsWith(steps.branch-names.outputs.current_branch,'feature')
+        run: 
+          python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} ${{ env.MINOR }}
+ 
+      # update version if bracnh start with feature
+      - name: Update version [patch]
+        if: startsWith(steps.branch-names.outputs.current_branch,'hotfix')
+        run:
+          python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} ${{ env.PATCH }}
+      
+      # generate variables for commit and tag 
+      - name: Save Version and Log to env
+        id: get-commit-txt
+        run: | 
+          COMMIT_MSG=$(python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} version_log -1)
+          TAG_MSG=$(python ${{env.VERSION_UP}} ${{ env.NAME_VERSION_FILE }} version)
+          echo "COMMIT_MSG=${COMMIT_MSG}" >> $GITHUB_ENV
+          echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_ENV
+          echo "TAG_MSG=${TAG_MSG}" >> $GITHUB_OUTPUT
+      
       # setup user which will be commit
       # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-      - name: setup git config for github bot 
+      - name: Setup git config
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "<>"
 
-      #commit
-      - name: commit modify [version] file
+      # add and push to remote repository 
+      - name: Update [version] and put [tag]
         run: |
           git add .
-          git commit -m "version up [x.x.x] <- [x.x.x]"
-          git push origin release
+          git commit -m "${{ env.COMMIT_MSG }}"
+          git tag -a v${{ env.TAG_MSG }} -m "update tag"
+          git push -u origin ${{ env.RELEASE_BRACH }} --tags 
+  
+  # create changelog file and put data to file 
+  changelog-fixme:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: update-version
+    steps:
+      - name: Prepare enviroments
+        run: |
+          echo "update chnagelog file"
+      # checkout on branch 
+      - name: Сheckout on [${{env.RELEASE_BRACH}}]
+        uses: actions/checkout@v2
 
-      #   # Ничего не обновляем и выходим
-      # - name: Check update version MINOR 
-      #   if: ${{ env.TYPE_BRANCH == 'none' }}
-      #   run: | 
-      #     echo "Nothing to update"
-      #     # exit 0
-              
+  # create changelog file and put data to file 
+  build-fixme:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: changelog-fixme
+    steps:
+      - name: Prepare enviroments
+        run: |
+          echo "start build application"
+      # checkout on branch 
+      - name: Сheckout on [${{env.RELEASE_BRACH}}]
+        uses: actions/checkout@v2
+
+  # create changelog file and put data to file 
+  tests-fixme:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: changelog-fixme
+    steps:
+      - name: Prepare enviroments
+        run: |
+          echo "update chnagelog file"
+      # checkout on branch 
+      - name: Starting tests
+        uses: actions/checkout@v2
+  
+  # telegram notify about all tests
+  tests-notify:
+    needs: tests-fixme
+    runs-on: ubuntu-latest
+    steps:
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            Тестирование пройдено
+
+
+  # build docker image and push to registry
+  docker-push:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: [tests-notify,update-version]
+    env: 
+      tag: ${{needs.update-version.outputs.tag}}
+    steps:
+      - name: Prepare env 
+        run: | 
+          echo "show variables"
+          echo [${{env.tag}}]
+      # checkout on branch 
+      - name: Сheckout on [${{env.RELEASE_BRACH}}] and v [${{env.tag}}]
+        uses: actions/checkout@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_HUB_LOGIN }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Build and push Docker image to DockerHub
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.tag}}
+  
+  # Final notify about all release pack
+  final-notify:
+    needs: [docker-push,update-version]
+    env: 
+      tag: ${{needs.update-version.outputs.tag}}
+    runs-on: ubuntu-latest
+    steps:
+      # use special lib for parse branch names 
+      - name: Get branch names
+        id: branch-names
+        uses: tj-actions/branch-names@v8
+
+      # use for get time value
+      - name: Get current time
+        uses: josStorer/get-current-time@v2
+        id: current-time
+        with:
+          format: YYYY.MM.DD-HH:mm:ss
+          utcOffset: "+08:00"
+      
+      #print info about time
+      - name: Use current time
+        env:
+          TIME: "${{ steps.current-time.outputs.time }}"
+          R_TIME: "${{ steps.current-time.outputs.readableTime }}"
+          F_TIME: "${{ steps.current-time.outputs.formattedTime }}"
+          YEAR: "${{ steps.current-time.outputs.year }}"
+          DAY: "${{ steps.current-time.outputs.day }}"
+        run: echo $TIME $R_TIME $F_TIME $YEAR $DAY
+
+      # checkout on branch 
+      - name: Checkout on release
+        uses: actions/checkout@v2
+      
+      # genearate message and notify 
+      - name: send telegram message on push
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          format: html
+          document: 
+          message: |           
+            Новый выпуск изменений
+            <b>Проект</b> : <code>${{ env.REPO_NAME }}</code>
+            <b>Версия</b> : <code>${{env.tag}}</code>
+            <b>Дата</b>: <code>${{ steps.current-time.outputs.formattedTime }}</code>
+            
+            Информация о Git-репозитории
+            <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
+            <b>GIT TAG</b>: <a href="${{env.URL_REPO}}releases/tag/v${{ steps.branch-names.outputs.tag }}">${{env.tag}}</a>
+            
+            Информация о Docker-репозитории
+            <b>Владелец</b>: <a href="https://hub.docker.com/repositories/${{ secrets.DOCKER_HUB_LOGIN }}">${{ secrets.DOCKER_HUB_LOGIN }}</a>
+            <b>Название</b>: <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/general">${{ env.REPO_NAME }}</a>
+            <b>Тег</b>: <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags/v">${{env.tag}}</a>
+            <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags">v${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}</a>
+  
+    
+
+
+      
+        
+    
       
     
 
