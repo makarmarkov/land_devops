@@ -38,14 +38,14 @@ jobs:
 
   lint: 
     runs-on: ubuntu-latest
-    name: (SEC) Lint
+    name: Lint
     steps:
       - name: first-step
         run : | 
           echo "all normal"
   saas: 
     runs-on: ubuntu-latest
-    name: (SEC) SAAS
+    name: SAAS
     steps:
       - name: first-step
         run : | 
@@ -53,7 +53,14 @@ jobs:
 
   dast: 
     runs-on: ubuntu-latest
-    name: (SEC) DAST
+    name: DAST
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+  yast: 
+    runs-on: ubuntu-latest
+    name: YAST
     steps:
       - name: first-step
         run : | 

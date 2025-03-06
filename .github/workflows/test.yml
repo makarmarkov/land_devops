@@ -1,0 +1,49 @@
+name: Test all data 
+on:
+  workflow_call:
+    # This example has flow2 define its inputs,
+    # which is better for matrix strategies.
+    # If you prefer to have flow1 define outputs, check the docs for an example.
+    inputs:  
+      version:
+        type: string
+        required: true
+jobs: 
+  unit: 
+    name: Unit-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run test
+        run: | 
+          echo "simple run test"
+  smoke: 
+    name: Smoke-test 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run test
+        run: | 
+          echo "simple run test"
+  
+  fazz:
+    name: Fazzing 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run test
+        run: | 
+          echo "simple run test"
+
+  integr:
+    name: Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run test
+        run: | 
+          echo "simple run test"
+
+  regress:
+    name: Regress
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run test
+        run: | 
+          echo "simple run test"

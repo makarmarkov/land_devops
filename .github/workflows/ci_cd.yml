@@ -55,7 +55,7 @@ jobs:
   security: 
     name: (SEC)
     needs: pre-merge-check
-    uses: makarmarkov/land_devops/.github/workflows/sec.yml@release
+    uses: makarmarkov/land_devops/.github/workflows/sec.yml@release # attention @branch-name is recomnneded
 
   # start update version files       
   update-version:
@@ -157,18 +157,11 @@ jobs:
 
   # create changelog file and put data to file 
   tests-fixme:
-    name: (CI) Test
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
+    name: (TST)
     needs: build-fixme
-    steps:
-      - name: Prepare enviroments
-        run: |
-          echo "update chnagelog file"
-      # checkout on branch 
-      - name: Starting tests
-        uses: actions/checkout@v2
+    uses: makarmarkov/land_devops/.github/workflows/test.yml@release
+    with: 
+      version: alpha
   
   # telegram notify about all tests
   tests-notify:
