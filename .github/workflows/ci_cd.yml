@@ -46,8 +46,22 @@ jobs:
           echo "REF NAME      : ${{ github.ref_name }}"
           echo "DEFAULT BRANCH: ${{ steps.branch-names.outputs.default_branch }}"
           echo "WOKSPACE      : ${{ github.workspace }} "
-      
-        
+  
+  # antivirus scanning
+  antivirus: 
+    runs-on: ubuntu-latest
+    name: History AV Scan
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: '0'
+    - name: Git AV Scan
+      uses: djdefi/gitavscan@main
+      with:
+        full: '--full'
+
+
+
   # start update version files       
   update-version:
     # IMPORTANT!
