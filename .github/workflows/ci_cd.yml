@@ -317,22 +317,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       #generate app token 
-      - name: Generate GitHub App token
-        id: generate_token
-        uses: actions/create-github-app-token@v1
-        with:
-          app_id: ${{ secrets.APP_ID }}
-          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      # - name: Generate GitHub App token
+      #   id: generate_token
+      #   uses: actions/create-github-app-token@v1
+      #   with:
+      #     app_id: ${{ secrets.APP_ID }}
+      #     private_key: ${{ secrets.APP_PRIVATE_KEY }}
+      - name: Сheckout
+        uses: actions/checkout@v2
       #trigger another workflow 
       - name: Trigger another workflow
-        uses: benc-uk/workflow-dispatch@v1
-        with:
-          workflow: deploy.yml
-          token: ${{ steps.generate_token.outputs.token }}
-          repo: makarmarkov/land_devops
-          ref: release
-          with: 
-            version: ${{env.tag}}
+        uses: ./github/workflows/deploy.yml
+        secrets: inherit
+        with: 
+          version: ${{env.tag}}
 
 
       
