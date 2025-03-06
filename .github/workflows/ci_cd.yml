@@ -6,6 +6,7 @@ name: Automate Version and Push to Docker
 #   push:
 #     branches: [ "master", "develop" ]
 on:
+  workflow_dispatch:
   pull_request:
     # На какие типы событий он должен работать
     #types: [opened, synchronize, reopened, closed, assigned, unassigned, labeled, unlabeled, edited]
