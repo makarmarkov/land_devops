@@ -10,7 +10,7 @@ on:
     #     required: true
 
 jobs: 
- antivirus: 
+  antivirus: 
     runs-on: ubuntu-latest
     name: (SEC) antivirus
     steps:
