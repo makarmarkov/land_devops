@@ -317,10 +317,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Сheckout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       #trigger another workflow 
       - name: Trigger another workflow
-        uses: ./github/workflows/deploy.yml@release
+        uses: makarmarkov/land_devops/./github/workflows/deploy.yml@release
         with: 
           version: ${{env.tag}}
 
