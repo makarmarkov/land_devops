@@ -12,6 +12,7 @@ on:
 jobs: 
   deploy-dev: 
     runs-on: ubuntu-latest
+    environment: dev
     name: (DEP) Deploy DEV
     steps:
       - name: first-step
@@ -20,6 +21,7 @@ jobs:
   
   deploy-test: 
     runs-on: ubuntu-latest
+    environment: dev
     name: (DEP) Deploy TEST
     steps:
       - name: first-step
@@ -28,6 +30,7 @@ jobs:
 
   deploy-stage: 
     runs-on: ubuntu-latest
+    environment: dev
     name: (DEP) Deploy STAGE
     steps:
       - name: first-step
@@ -35,6 +38,7 @@ jobs:
           echo "all normal"
 
   deploy-prod: 
+    environment: prod
     needs: [deploy-test] 
     runs-on: ubuntu-latest
     name: (DEP) Deploy PROD
