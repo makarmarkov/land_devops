@@ -315,7 +315,41 @@ jobs:
             <b>Тег</b>: <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags/v">${{env.tag}}</a>
             <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags">v${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}</a>
   
-    
+  deploy-dev: 
+    needs: final-notify 
+    runs-on: ubuntu-latest
+    name: (DEP) Deploy DEV
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+  
+  deploy-test: 
+    needs: [deploy-dev,final-notify] 
+    runs-on: ubuntu-latest
+    name: (DEP) Deploy TEST
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+
+  deploy-stage: 
+    needs: [deploy-test,final-notify]
+    runs-on: ubuntu-latest
+    name: (DEP) Deploy STAGE
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+
+  deploy-prod: 
+    needs: [deploy-stage] 
+    runs-on: ubuntu-latest
+    name: (DEP) Deploy PROD
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"  
 
 
       
