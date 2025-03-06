@@ -1,0 +1,44 @@
+name: Deploy appllication to enviroments
+on:
+  workflow_call:
+    # This example has flow2 define its inputs,
+    # which is better for matrix strategies.
+    # If you prefer to have flow1 define outputs, check the docs for an example.
+    inputs:  
+      FOO:
+        type: string
+        required: true
+
+jobs: 
+    deploy-dev: 
+    runs-on: ubuntu-latest
+    name: (DEP) Deploy DEV
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+  
+  deploy-test: 
+    runs-on: ubuntu-latest
+    name: (DEP) Deploy TEST
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+
+  deploy-stage: 
+    runs-on: ubuntu-latest
+    name: (DEP) Deploy STAGE
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+
+  deploy-prod: 
+    needs: [deploy-test] 
+    runs-on: ubuntu-latest
+    name: (DEP) Deploy PROD
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"  
