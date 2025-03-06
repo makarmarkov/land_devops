@@ -311,7 +311,7 @@ jobs:
   #calling another workflows
   call-deploy:
     name: Calling deploy
-    need: [final-notify,update-version]
+    needs: [final-notify,update-version]
     env: 
       tag: ${{needs.update-version.outputs.tag}}
     runs-on: ubuntu-latest
