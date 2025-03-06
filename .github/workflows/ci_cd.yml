@@ -49,51 +49,18 @@ jobs:
           echo "REF NAME      : ${{ github.ref_name }}"
           echo "DEFAULT BRANCH: ${{ steps.branch-names.outputs.default_branch }}"
           echo "WOKSPACE      : ${{ github.workspace }} "
+          echo "WOKSPACE      : ${{ github.workspace }} "
   
   # antivirus scanning
-  antivirus: 
-    needs: pre-merge-check 
-    runs-on: ubuntu-latest
-    name: (SEC) antivirus
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: '0'
-    - name: Git AV Scan
-      uses: djdefi/gitavscan@main
-      with:
-        full: '--full'
-
-  lint: 
-    needs: pre-merge-check 
-    runs-on: ubuntu-latest
-    name: (SEC) Lint
-    steps:
-      - name: first-step
-        run : | 
-          echo "all normal"
-  saas: 
-    needs: pre-merge-check 
-    runs-on: ubuntu-latest
-    name: (SEC) SAAS
-    steps:
-      - name: first-step
-        run : | 
-          echo "all normal"
-
-  dast: 
-    needs: pre-merge-check 
-    runs-on: ubuntu-latest
-    name: (SEC) DAST
-    steps:
-      - name: first-step
-        run : | 
-          echo "all normal"
+  security: 
+    name: (SEC)
+    needs: pre-merge-check
+    uses: makarmarkov/land_devops/.github/workflows/sec.yml@release
 
   # start update version files       
   update-version:
     name: (VER) Version UP
-    needs: [antivirus, saas, dast, lint]
+    needs: security
     permissions:
       contents: write
     runs-on: ubuntu-latest

@@ -1,0 +1,46 @@
+name: Security scanning
+on:
+  workflow_call:
+    # This example has flow2 define its inputs,
+    # which is better for matrix strategies.
+    # If you prefer to have flow1 define outputs, check the docs for an example.
+    # inputs:  
+    #   version:
+    #     type: string
+    #     required: true
+
+jobs: 
+ antivirus: 
+    runs-on: ubuntu-latest
+    name: (SEC) antivirus
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: '0'
+    - name: Git AV Scan
+      uses: djdefi/gitavscan@main
+      with:
+        full: '--full'
+
+  lint: 
+    runs-on: ubuntu-latest
+    name: (SEC) Lint
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+  saas: 
+    runs-on: ubuntu-latest
+    name: (SEC) SAAS
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
+
+  dast: 
+    runs-on: ubuntu-latest
+    name: (SEC) DAST
+    steps:
+      - name: first-step
+        run : | 
+          echo "all normal"
