@@ -12,6 +12,13 @@ on:
     types: [closed]
     branches:
       - release
+    workflow_call:
+    inputs:
+      username:
+        description: 'A username passed from the caller workflow'
+        default: 'john-doe'
+        required: false
+        type: string
         
 env:
   NAME_VERSION_FILE: ${{ github.workspace }}/version/version
@@ -309,11 +316,14 @@ jobs:
             <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags">v${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}</a>
   
   #calling another workflows
-  call-deploy: 
-    uses: ./github/workflows/deploy.yml
-    secrets: inherit
-    with: 
-      FOO: bar
+  call-deploy:
+    - name: Calling deploy
+      steps:
+        - uses: actions/checkout@v3 # Necessary to access local action   
+        - uses: ./github/workflows/deploy.yml
+          secrets: inherit
+          with: 
+            FOO: bar
 
 
       
