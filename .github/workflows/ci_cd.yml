@@ -12,13 +12,6 @@ on:
     types: [closed]
     branches:
       - release
-    workflow_call:
-    inputs:
-      username:
-        description: 'A username passed from the caller workflow'
-        default: 'john-doe'
-        required: false
-        type: string
         
 env:
   NAME_VERSION_FILE: ${{ github.workspace }}/version/version
