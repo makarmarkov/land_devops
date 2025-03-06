@@ -75,31 +75,31 @@ jobs:
     runs-on: ubuntu-latest
     name: (SEC) Lint
     steps:
-    - uses: actions/checkout@v3
-      run : | 
-        echo "all normal"
+      - name: first-step
+        run : | 
+          echo "all normal"
   saas: 
     needs: pre-merge-check 
     runs-on: ubuntu-latest
     name: (SEC) SAAS
     steps:
-    - uses: actions/checkout@v3
-      run : | 
-        echo "all normal"
+      - name: first-step
+        run : | 
+          echo "all normal"
 
   dast: 
     needs: pre-merge-check 
     runs-on: ubuntu-latest
     name: (SEC) DAST
     steps:
-    - uses: actions/checkout@v3
-      run : | 
-        echo "all normal"
+      - name: first-step
+        run : | 
+          echo "all normal"
 
   # start update version files       
   update-version:
     name: (VER) Version UP
-    needs: [antivirus, saas, dast]
+    needs: [antivirus, saas, dast, lint]
     permissions:
       contents: write
     runs-on: ubuntu-latest
