@@ -314,8 +314,8 @@ jobs:
     name: Calling deploy workflow
     needs: [final-notify,update-version]
     uses: makarmarkov/land_devops/.github/workflows/deploy.yml@release
-    env: 
-      tag: ${{needs.update-version.outputs.tag}}
+    # env: 
+    #   tag: ${{needs.update-version.outputs.tag}}
 
 
 
