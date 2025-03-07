@@ -13,8 +13,8 @@ env:
 
 jobs: 
   deploy-matrix:
+    runs-on: ubuntu-latest
     strategy:
-      runs-on: ubuntu-latest
       matrix:
         environment: [dev,test,stage]
     steps:
