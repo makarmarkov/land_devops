@@ -16,7 +16,7 @@ jobs:
     strategy:
       runs-on: ubuntu-latest
       matrix:
-        env: [dev,test,stage]
+        environment: [dev,test,stage]
     steps:
       - name: ewqe
         run: echo "start"
