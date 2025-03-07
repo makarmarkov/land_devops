@@ -33,7 +33,6 @@ jobs:
       # get data about container
       - name: List data about container 
         run: | 
-          docker status 
           docker ps -a 
           docker image -ls
 

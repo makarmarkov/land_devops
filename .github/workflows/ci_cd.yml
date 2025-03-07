@@ -253,7 +253,8 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
-          document: ./version/version/version
+          document: ./.github/workflows/img.png
+          photo: ./.github/workflows/img.png
           message: |           
             Новый выпуск изменений
             <b>Проект</b> : <code>${{ env.REPO_NAME }}</code>
