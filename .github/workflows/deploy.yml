@@ -23,7 +23,6 @@ jobs:
 
   deploy-prod: 
     environment: prod
-    needs: [deploy-test] 
     runs-on: ubuntu-latest
     name: PROD
     steps:
