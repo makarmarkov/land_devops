@@ -19,7 +19,7 @@ jobs:
         environment: [dev,test,stage]
     steps:
       - name: ewqe
-        run: echo "start"
+        run: echo "start on ${{matrix.environment}}"
 
   deploy-prod: 
     environment: prod
