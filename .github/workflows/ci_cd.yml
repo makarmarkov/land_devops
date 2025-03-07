@@ -276,7 +276,7 @@ jobs:
     needs: [final-notify,update-version]
     uses: makarmarkov/land_devops/.github/workflows/deploy.yml@release
     with: 
-      version: 1.1.0
+      version: "1.1.0"
 
 
 
