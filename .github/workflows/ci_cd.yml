@@ -253,13 +253,14 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
-          document: ./.github/workflows/img.png
+          # document: ./.github/workflows/img.png
           photo: ./.github/workflows/img.png
           message: |           
             Новый выпуск изменений
             <b>Проект</b> : <code>${{ env.REPO_NAME }}</code>
             <b>Версия</b> : <code>${{env.tag}}</code>
             <b>Дата</b>: <code>${{ steps.current-time.outputs.formattedTime }}</code>
+            <b>Автор</b>: <a href="#">Такой то чел</a>
             
             Информация о Git-репозитории
             <b>GIT MR</b> : <a href="${{env.URL_REPO}}/pull/${{ env.PR_NUMBER }}">${{ env.PR_NUMBER }}</a>
