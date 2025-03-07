@@ -1,48 +1,57 @@
 name: Deploy appllication to enviroments
 on:
   workflow_call:
-    # This example has flow2 define its inputs,
-    # which is better for matrix strategies.
-    # If you prefer to have flow1 define outputs, check the docs for an example.
     inputs:  
       version:
         type: string
         required: true
+        description: "Version of application. Tag from gitlab"
+
+# declare version of application 
+env:
+  TAG: ${{ inputs.version|| 'latest' }}
 
 jobs: 
-  deploy-dev: 
-    runs-on: ubuntu-latest
-    environment: dev
-    name: (DEP) Deploy DEV
+  deploy-matrix:
+    strategy:
+      runs-on: ubuntu-latest
+      matrix:
+        env: [dev,test,stage]
     steps:
-      - name: first-step
-        run : | 
-          echo "all normal"
-  
-  deploy-test: 
-    runs-on: ubuntu-latest
-    environment: dev
-    name: (DEP) Deploy TEST
-    steps:
-      - name: first-step
-        run : | 
-          echo "all normal"
-
-  deploy-stage: 
-    runs-on: ubuntu-latest
-    environment: dev
-    name: (DEP) Deploy STAGE
-    steps:
-      - name: first-step
-        run : | 
-          echo "all normal"
+      - name: ewqe
+        run: echo "start"
 
   deploy-prod: 
     environment: prod
     needs: [deploy-test] 
     runs-on: ubuntu-latest
-    name: (DEP) Deploy PROD
+    name: PROD
     steps:
-      - name: first-step
-        run : | 
-          echo "all normal"  
+      # checkout 
+      - name: checkout on release branch
+        uses: actions/checkout@v2
+  
+      # get data about container
+      - name: List data about container 
+        run: | 
+          docker status 
+          docker ps -a 
+          docker image -ls
+
+      # docker stop all containers 
+      # and delete all images
+      - name: Stop and Delete images 
+        run: |
+          docker stop $(docker ps -a -q)
+          docker rm $(docker ps -a -q)
+      
+      # create file   
+      - name: Create .ENV
+        run : |
+          touch .env
+          echo "TAG=${{ env.TAG }}" >> .env  
+
+      # Start new version of application 
+      - name: Run container ${{env.TAG}}
+        run: |  
+          docker compose up

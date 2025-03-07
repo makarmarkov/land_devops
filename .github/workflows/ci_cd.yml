@@ -23,6 +23,7 @@ env:
   REPO_NAME: ${{ github.event.repository.name }}
   PR_NUMBER: ${{ github.event.number }}
   URL_REPO: ${{ github.server_url }}/${{ github.repository }}
+  DOCKER_REPO: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}
 
 #JOBS list for update versions 
 jobs:
@@ -270,14 +271,12 @@ jobs:
             <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags">v${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}</a>
   
   #calling another workflows
-  call-deploy:
-    name: Calling deploy workflow
+  deploy:
+    name: (Deploy)
     needs: [final-notify,update-version]
-    uses: makarmarkov/land_devops/.github/workflows/deploy.yml@release
+    uses: ${{ env.DOCKER_REPO }}/.github/workflows/deploy.yml@release
     with: 
-      version: tete
-    # env: 
-    #   tag: ${{needs.update-version.outputs.tag}}
+      version: 1.1.0
 
 
 
