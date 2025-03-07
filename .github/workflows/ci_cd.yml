@@ -274,7 +274,7 @@ jobs:
   deploy:
     name: (Deploy)
     needs: [final-notify,update-version]
-    uses: ${{ env.DOCKER_REPO }}/.github/workflows/deploy.yml@release
+    uses: makarmarkov/land_devops/.github/workflows/deploy.yml@release
     with: 
       version: 1.1.0
 
