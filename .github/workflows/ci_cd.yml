@@ -279,6 +279,8 @@ jobs:
     uses: makarmarkov/land_devops/.github/workflows/deploy.yml@release
     with: 
       version: tete
+      container_name: land-devops
+      image_full_name: ${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}
 
 
 

@@ -6,11 +6,23 @@ on:
         type: string
         required: true
         description: "Version of application. Tag from gitlab"
+      container_name:
+        type: string
+        required: true
+        description: "Name of container."
+      image_full_name:
+        type: string
+        required: true
+        description: "name of image from dockerhub"
 
 # declare version of application 
 env:
   TAG: ${{ inputs.version|| 'latest' }}
+  CONTAINER_NAME: ${{ inputs.container_name || 'land_devops:v0.16.2'}}
+  IMAGE_NAME: ${{ inputs.container_name || 'makarmarkov/land_devops:v0.16.2'}}
+  PROD_ENV: "prod.env"
 
+# jobs for deploy applications 
 jobs: 
   deploy-matrix:
     runs-on: ubuntu-latest
@@ -21,6 +33,7 @@ jobs:
       - name: ewqe
         run: echo "start on ${{matrix.environment}}"
 
+  # special job for deploy to prod
   deploy-prod: 
     environment: prod
     runs-on: ubuntu-latest
@@ -40,16 +53,18 @@ jobs:
       # and delete all images
       - name: Stop and Delete images 
         run: |
-          docker stop $(docker ps -a -q)
-          docker rm $(docker ps -a -q)
+          docker compose down
       
-      # create file   
+      # create file prod.env file for deploy application 
       - name: Create .ENV
         run : |
-          touch .env
-          echo "TAG=${{ env.TAG }}" >> .env  
+          touch ${{ env.PROD_ENV }}
+          echo "TAG=${{ env.TAG }}" >> .env
+          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}" >> .env
+          echo "DOCKER_HUB_IMAGE = ${{ env.IMAGE_NAME }}" >> .env  
 
       # Start new version of application 
-      - name: Run container ${{env.TAG}}
+      - name: Run container ${{env.IMAGE_NAME}} for file ${{ env.PROD_ENV }}
         run: |  
-          docker compose up
+          cat ${{env.PROD_ENV}}
+          docker compose --env-file ${{env.PROD_ENV}} up
