@@ -36,7 +36,7 @@ jobs:
   # special job for deploy to prod
   deploy-prod: 
     environment: prod
-    runs-on: ubuntu-latest
+    runs-on: win-rummer-nik
     name: PROD
     steps:
       # checkout 
