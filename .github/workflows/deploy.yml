@@ -18,7 +18,7 @@ on:
 # declare version of application 
 env:
   TAG: ${{ inputs.version || 'latest' }}
-  CONTAINER_NAME: ${{ inputs.container_name || 'land_devops:v0.16.2'}}
+  CONTAINER_NAME: ${{ inputs.container_name || 'land_devops:v0.16.23'}}
   IMAGE_NAME: ${{ inputs.image_full_name || 'makarmarkov/land_devops:v0.16.2'}}
   PROD_ENV: "prod.env"
 
@@ -51,9 +51,9 @@ jobs:
 
       # docker stop all containers 
       # and delete all images
-      - name: Stop and Delete images 
-        run: |
-          FOR /f "tokens=*" %i IN ('docker ps -q') DO docker stop %i
+      # - name: Stop and Delete images 
+      #   run: |
+      #     FOR /f "tokens=*" %i IN ('docker ps -q') DO docker stop %i
 
       # docker stop $(docker ps -a -q)
       # docker rm $(docker ps -a -q)
