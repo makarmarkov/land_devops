@@ -1,0 +1,18 @@
+# version: '3'
+services:
+#first image 
+  web:
+    image: "makarmarkov/land_devops:v0.16.0"
+    container_name: "web-container-v0.16.0"
+    volumes: 
+      - "./volume:/tmp/"
+    # build: 
+    #   context: ./
+    #   dockerfile: ./dockerfile
+    ports:
+      - 8081:80
+    networks:
+      - landing_network
+
+networks:
+  landing_network:

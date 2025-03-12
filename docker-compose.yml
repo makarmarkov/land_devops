@@ -2,8 +2,8 @@
 services:
 #first image 
   web:
-    image: "web-image:${VERSION}"
-    container_name: "web-container-${VERSION}"
+    image: "${DOCKER_HUB_IMAGE}"
+    container_name: "${CONTAINER_NAME}-${VERSION}"
     volumes: 
       - "./volume:/tmp/"
     # build: 

@@ -17,9 +17,9 @@ on:
 
 # declare version of application 
 env:
-  TAG: ${{ inputs.version|| 'latest' }}
+  TAG: ${{ inputs.version || 'latest' }}
   CONTAINER_NAME: ${{ inputs.container_name || 'land_devops:v0.16.2'}}
-  IMAGE_NAME: ${{ inputs.container_name || 'makarmarkov/land_devops:v0.16.2'}}
+  IMAGE_NAME: ${{ inputs.image_full_name || 'makarmarkov/land_devops:v0.16.2'}}
   PROD_ENV: "prod.env"
 
 # jobs for deploy applications 
@@ -47,24 +47,27 @@ jobs:
       - name: List data about container 
         run: | 
           docker ps -a 
-          docker image -ls
+          docker image ls
 
       # docker stop all containers 
       # and delete all images
       - name: Stop and Delete images 
         run: |
           docker compose down
+
+      # docker stop $(docker ps -a -q)
+      # docker rm $(docker ps -a -q)
       
       # create file prod.env file for deploy application 
       - name: Create .ENV
         run : |
           touch ${{ env.PROD_ENV }}
-          echo "TAG=${{ env.TAG }}" >> .env
-          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}" >> .env
-          echo "DOCKER_HUB_IMAGE = ${{ env.IMAGE_NAME }}" >> .env  
+          echo "VERSION=${{ env.TAG }}" >> ${{ env.PROD_ENV }}
+          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}" >> ${{ env.PROD_ENV }}
+          echo "DOCKER_HUB_IMAGE = ${{ env.IMAGE_NAME }}" >> ${{ env.PROD_ENV }}  
 
       # Start new version of application 
       - name: Run container ${{env.IMAGE_NAME}} for file ${{ env.PROD_ENV }}
         run: |  
           cat ${{env.PROD_ENV}}
-          docker compose --env-file ${{env.PROD_ENV}} up
+          docker-compose -f docker-compose.yml --env-file ${{ env.PROD_ENV }} up

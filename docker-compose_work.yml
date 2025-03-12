@@ -1,0 +1,77 @@
+# version: '3'
+services:
+#first image 
+  web:
+    image: "web-image:1.1.0"
+    container_name: "web-container-1.1.0"
+    volumes: 
+      - "./volume:/tmp/"
+    build: 
+      context: ./
+      dockerfile: ./dockerfile
+    ports:
+      - 8081:80
+    networks:
+      - landing_network
+    depends_on:
+      - api
+#second image 
+  app:
+    image: "app-image:1.1.0"
+    container_name: "appp-container-1.1.0"
+    volumes: 
+      - "./volume:/tmp/"
+    build: 
+      context: ./
+      dockerfile: ./dockerfile
+    ports:
+      - 8082:80
+    networks:
+      - landing_network
+    depends_on:
+      - db
+#second image 
+  db:
+    image: "db-image:1.1.0"
+    container_name: "db-container-1.1.0"
+    volumes: 
+      - "./volume:/tmp/"
+    build: 
+      context: ./
+      dockerfile: ./dockerfile
+    ports:
+      - 8083:80
+    networks:
+      - landing_network
+
+#second image 
+  api:
+    image: "api-image:1.1.0"
+    container_name: "api-container-1.1.0"
+    volumes: 
+      - "./volume:/tmp/"
+    build: 
+      context: ./
+      dockerfile: ./dockerfile
+    ports:
+      - 8084:80
+    networks:
+      - landing_network
+    depends_on:
+      - app
+
+
+#second image
+  # app:
+  #   volumes: 
+  #     - "./volume:/tmp/"
+  #   build: 
+  #     context: ./
+  #     dockerfile: ./dockerfile
+  #   ports:
+  #     - 8082:80
+  #   links: 
+  #     - web
+
+networks:
+  landing_network:
