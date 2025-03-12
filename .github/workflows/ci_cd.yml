@@ -282,7 +282,7 @@ jobs:
     with: 
       version: v0.16.2
       container_name: land-devops
-      image_full_name: ${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v0.16.2
+      image_full_name: makarmarkov/land_devops:v0.16.2
 
 
 
