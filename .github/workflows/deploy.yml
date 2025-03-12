@@ -36,7 +36,7 @@ jobs:
   # special job for deploy to prod
   deploy-prod: 
     environment: prod
-    runs-on: win-rummer-nik
+    runs-on: self-hosted
     name: PROD
     steps:
       # checkout 
