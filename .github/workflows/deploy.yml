@@ -71,7 +71,7 @@ jobs:
       - name: Create .ENV
         shell: powershell
         run : |
-          New-Item ${{ env.PROD_ENV }} -ItemType file
+          New-Item ${{ env.PROD_ENV }} -ItemType file -Force
           Add-Content ${{ env.PROD_ENV }} "VERSION=${{ env.TAG }}"
           Add-Content ${{ env.PROD_ENV }} "CONTAINER_NAME=${{ env.CONTAINER_NAME }}"
           Add-Content ${{ env.PROD_ENV }} "DOCKER_HUB_IMAGE = ${{ env.IMAGE_NAME }}"
