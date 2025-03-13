@@ -132,6 +132,9 @@ jobs:
     name: (VER) Chagelog UP
     permissions:
       contents: write
+      pull-requests: write
+      repository-projects: write
+      id-token: write
     runs-on: ubuntu-latest
     needs: update-version
     steps:  
@@ -167,29 +170,15 @@ jobs:
           path: ${{env.CHANGELOG_FILE}}
 
       # append comment to PR
-      - uses: mshick/add-pr-comment@v2
+      - uses: actions/github-script@v6
         with:
-          message: |
-            **Changelog file was update successfully**
-      # append comment to PR
-      - uses: mshick/add-pr-comment@v2
-        with:
-          message: |
-            **Changelog file was update successfully**
-      # append comment to PR
-      - uses: mshick/add-pr-comment@v2
-        with:
-          message: |
-            **Changelog file was update successfully**
-          message-failure: |
-            Uh oh!
-      # append comment to PR
-      - uses: mshick/add-pr-comment@v2
-        with:
-          message: |
-            **Changelog file was update successfully**
-          message-success: |
-            Yea!
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '👋 Thanks for reporting!'
+            })
 
 
   # create changelog file and put data to file 
