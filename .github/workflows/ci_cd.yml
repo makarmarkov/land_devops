@@ -138,6 +138,10 @@ jobs:
       # checkout on branch 
       - name: Сheckout on [${{env.RELEASE_BRACH}}]
         uses: actions/checkout@v2
+
+      - name: update release
+        run: |
+          git pull
       
       - name: Update changelog.md
         run: | 
@@ -155,6 +159,12 @@ jobs:
           git add .
           git commit -m "[${{needs.update-version.outputs.tag}}] ${{env.CHAGELOG_FILE}}"
           git push -u origin ${{ env.RELEASE_BRACH }} --tags 
+
+      # upload changelog to artifact
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.CHANGELOG_FILE}}
+          path: ${{env.CHANGELOG_FILE}}
 
 
   # create changelog file and put data to file 
