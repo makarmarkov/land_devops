@@ -280,9 +280,9 @@ jobs:
     #   tag: ${{needs.update-version.outputs.tag}}
     uses: makarmarkov/land_devops/.github/workflows/deploy.yml@release
     with: 
-      version: v0.16.2
+      version: v${{needs.update-version.outputs.tag}}
       container_name: land-devops
-      image_full_name: makarmarkov/land_devops:v0.16.2
+      image_full_name: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{needs.update-version.outputs.tag}}
 
 
 
