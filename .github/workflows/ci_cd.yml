@@ -282,7 +282,9 @@ jobs:
     with: 
       version: v${{needs.update-version.outputs.tag}}
       container_name: land-devops
-      image_full_name: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{needs.update-version.outputs.tag}}
+      # image_full_name: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{needs.update-version.outputs.tag}}
+    secrets: 
+      DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_LOGIN }}
 
 
 
