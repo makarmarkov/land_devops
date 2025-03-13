@@ -143,6 +143,12 @@ jobs:
         run: | 
           echo "---" >> ${{env.CHANGELOG_FILE}} 
           echo "#### ${{needs.update-version.outputs.tag}} - $(date +"%Y.%m.%d %H:%M:%S") ${{ github.event.pull_request.head.ref }}" >> ${{env.CHANGELOG_FILE}} 
+      
+      - name: Setup git config
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+      
        # add and push to remote repository 
       - name: Commit
         run: |
