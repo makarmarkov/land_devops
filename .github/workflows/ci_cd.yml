@@ -146,7 +146,7 @@ jobs:
       - name: Update changelog.md
         run: | 
           echo "---" >> ${{env.CHANGELOG_FILE}} 
-          echo "#### ${{needs.update-version.outputs.tag}} - $(date +"%Y.%m.%d %H:%M:%S") ${{ github.event.pull_request.head.ref }}" >> ${{env.CHANGELOG_FILE}} 
+          echo "#### [${{needs.update-version.outputs.tag}}] - $(date +"%Y.%m.%d")    ${{ github.event.pull_request.head.ref }}" >> ${{env.CHANGELOG_FILE}} 
       
       - name: Setup git config
         run: |
@@ -165,6 +165,31 @@ jobs:
         with:
           name: ${{env.CHANGELOG_FILE}}
           path: ${{env.CHANGELOG_FILE}}
+
+      # append comment to PR
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            **Changelog file was update successfully**
+      # append comment to PR
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            **Changelog file was update successfully**
+      # append comment to PR
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            **Changelog file was update successfully**
+          message-failure: |
+            Uh oh!
+      # append comment to PR
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            **Changelog file was update successfully**
+          message-success: |
+            Yea!
 
 
   # create changelog file and put data to file 
