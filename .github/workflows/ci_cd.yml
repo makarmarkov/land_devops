@@ -24,7 +24,7 @@ env:
   PR_NUMBER: ${{ github.event.number }}
   URL_REPO: ${{ github.server_url }}/${{ github.repository }}
   CONTAINER_NAME: land_devops
-  # DOCKER_REPO: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}
+  CHANGELOG_FILE: changelog.md
 
 #JOBS list for update versions 
 jobs:
@@ -128,19 +128,28 @@ jobs:
           git push -u origin ${{ env.RELEASE_BRACH }} --tags 
   
   # create changelog file and put data to file 
-  changelog-fixme:
+  changelog:
     name: (VER) Chagelog UP
     permissions:
       contents: write
     runs-on: ubuntu-latest
     needs: update-version
-    steps:
-      - name: Prepare enviroments
-        run: |
-          echo "update chnagelog file"
+    steps:  
       # checkout on branch 
       - name: Сheckout on [${{env.RELEASE_BRACH}}]
         uses: actions/checkout@v2
+      
+      - name: Update changelog.md
+        run: | 
+          echo "---" >> ${{env.CHANGELOG_FILE}} 
+          echo "#### ${{needs.update-version.outputs.tag}} - $(date +"%Y.%m.%d %H:%M:%S") ${{ github.event.pull_request.head.ref }}" >> ${{env.CHANGELOG_FILE}} 
+       # add and push to remote repository 
+      - name: Commit
+        run: |
+          git add .
+          git commit -m "[${{needs.update-version.outputs.tag}}] ${{env.CHAGELOG_FILE}}"
+          git push -u origin ${{ env.RELEASE_BRACH }} --tags 
+
 
   # create changelog file and put data to file 
   build-fixme:
@@ -148,7 +157,7 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
-    needs: changelog-fixme
+    needs: changelog
     steps:
       - name: Prepare enviroments
         run: |
@@ -212,6 +221,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_LOGIN }}/${{env.REPO_NAME}}:v${{env.tag}}
 
+      # update info about docker Readme file and description
       - name: Docker Hub Description
         uses: peter-evans/dockerhub-description@v4
         with:
