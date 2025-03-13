@@ -20,7 +20,7 @@ env:
   TAG: ${{ inputs.version || 'latest' }}
   CONTAINER_NAME: ${{ inputs.container_name || 'land_devops:v0.16.23'}}
   PROD_ENV: "prod.env"
-  IMAGE_NAME: ${{secrets.DOCKER_USERNAME}}/${{ inputs.container_name}}:v${{inputs.version}} 
+  IMAGE_NAME: ${{secrets.DOCKER_USERNAME}}/${{ inputs.container_name}}:${{inputs.version}} 
 
 # jobs for deploy applications 
 jobs: 
