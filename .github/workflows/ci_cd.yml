@@ -234,6 +234,9 @@ jobs:
     name: (CI) Docker push
     permissions:
       contents: write
+      pull-requests: write
+      repository-projects: write
+      id-token: write
     runs-on: ubuntu-latest
     needs: [tests-notify,update-version]
     env: 
