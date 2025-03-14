@@ -303,7 +303,7 @@ jobs:
         uses: actions/checkout@v2
       
       # download changelog file
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: ${{env.CHANGELOG_FILE}}
           path: ${{env.CHANGELOG_FILE}}
