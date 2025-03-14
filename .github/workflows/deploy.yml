@@ -102,7 +102,8 @@ jobs:
           echo "get label"
   create-releae: 
     name: create release 
-    needs: ['change-label']
+    needs: [change-label]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
