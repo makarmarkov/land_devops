@@ -116,9 +116,14 @@ jobs:
           tag_name: ${{ env.TAG }}
           release_name: Релиз ${{ env.TAG }}
           body: |
-            ## Релиз приложения  `[${{ env.TAG }}]`. 
             #### О приложении 
             > ${{ github.event.repository.description }}
+
+            #### Список задач
+            Фичи: 
+              - тут название фичи и ссылка на тикет 
+            Баги: 
+              - пусто
 
             #### О сборке 
              - Номер PR `${{ github.event.number }}`
