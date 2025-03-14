@@ -204,6 +204,11 @@ jobs:
     name: (BUILD)
     needs: changelog
     uses: makarmarkov/land_devops/.github/workflows/build.yml@release
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+      id-token: write
 
   # build docker image and push to registry
   docker-push:
