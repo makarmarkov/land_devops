@@ -8,7 +8,6 @@ jobs:
       pull-requests: write
       repository-projects: write
     runs-on: ubuntu-latest
-    needs: changelog
     steps:
       - name: Prepare enviroments
         run: |
