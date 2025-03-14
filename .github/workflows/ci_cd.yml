@@ -306,7 +306,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ${{env.CHANGELOG_FILE}}
-          path: ${{env.CHANGELOG_FILE}}
       
       # genearate message and notify 
       - name: send telegram message on push
