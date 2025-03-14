@@ -62,7 +62,7 @@ jobs:
     # create changelog file and put data to file 
   tests:
     name: (TST)
-    needs: secutiry
+    needs: security
     uses: makarmarkov/land_devops/.github/workflows/test.yml@release
     with: 
       version: alpha
