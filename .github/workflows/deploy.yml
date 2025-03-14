@@ -21,6 +21,8 @@ env:
   CONTAINER_NAME: ${{ inputs.container_name || 'land_devops:v0.16.23'}}
   PROD_ENV: "prod.env"
   IMAGE_NAME: ${{secrets.DOCKER_USERNAME}}/${{ inputs.container_name}}:${{inputs.version}} 
+  LABEL_PROD: "PROD"
+  LABEL_EX_PROD: "EX_PROD"
 
 # jobs for deploy applications 
 jobs: 
@@ -38,6 +40,11 @@ jobs:
     environment: prod
     runs-on: self-hosted
     name: PROD
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+      id-token: write
     steps:
       # checkout 
       - name: checkout on release branch
@@ -59,6 +66,37 @@ jobs:
           Add-Content ${{ env.PROD_ENV }} "DOCKER_HUB_IMAGE = ${{ env.IMAGE_NAME }}"
 
       # Start new version of application 
+      # run docker in background
       - name: Run container ${{env.IMAGE_NAME}} for file ${{ env.PROD_ENV }}
         run: |  
-          docker-compose -f docker-compose.yml --env-file ${{ env.PROD_ENV }} up
+          docker-compose -f docker-compose.yml --env-file ${{ env.PROD_ENV }} up -d 
+
+      # add label to PR 
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['${{env.LABEL_PROD}}']
+            })
+
+  # change label for prs
+  change-label:
+    needs: [deploy-prod]
+    runs-on: ubuntu-latest
+    steps: 
+      # get last pr with label 
+      - name: Get pr with last label 
+        run: |
+          echo "get label"
+      # change name label 
+      - name: Rename label 
+        run: |
+          echo "get label"
+
+      # set new label to PR
+      - name: Put to current pr new label  
+        run: |
+          echo "get label"

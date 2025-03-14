@@ -314,8 +314,6 @@ jobs:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
-          # document: ./.github/workflows/img.png
-          # photo: ./.github/workflows/img.png
           document: ${{env.CHANGELOG_FILE}}
           message: |           
             Новый выпуск изменений
@@ -344,7 +342,11 @@ jobs:
       container_name: land_devops
     secrets: 
       DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_LOGIN }}
-
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+      id-token: write
 
 
 
