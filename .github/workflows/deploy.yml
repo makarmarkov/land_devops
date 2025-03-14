@@ -113,10 +113,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ env.TAG }}
+          release_name: Релиз ${{ env.TAG }}
           body: |
-            Сформирован релиз [${{ env.TAG }}]
+            ### Сформирован релиз приложения с новой версией **[${{ env.TAG }}]**. 
+            #### Подробная информация предоставлена по ссылке на эту версию.
+            #### Номер Автоматического развертывания приложения: ${{ github.event.number }}
+            #### Также доступен новый образ приложения в DockerHub. 
+            ---
+            Данный релиз установлен на Промышленный стенд и функционируется стабильно.
           draft: false
           prerelease: false
 
