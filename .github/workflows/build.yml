@@ -3,7 +3,7 @@ on:
   workflow_call:
     
 jobs: 
-    name: (CI) Build
+  build:
     permissions:
       contents: write
       pull-requests: write
