@@ -116,11 +116,20 @@ jobs:
           tag_name: ${{ env.TAG }}
           release_name: Релиз ${{ env.TAG }}
           body: |
-            ### Сформирован релиз приложения с новой версией **[${{ env.TAG }}]**. 
-            #### Подробная информация предоставлена по ссылке на эту версию.
-            #### Номер Автоматического развертывания приложения: ${{ github.event.number }}
-            #### Также доступен новый образ приложения в DockerHub. 
-            ---
+            ## Релиз приложения  `[${{ env.TAG }}]`. 
+            #### О приложении 
+            > ${{ github.event.repository.description }}
+
+            #### О сборке 
+             - Номер PR `${{ github.event.number }}`
+             - Dockerhub <здесь ссылка на докерхаб>
+
+            #### Как запустить 
+            ```
+              git clone <special tag>
+              docker-compose -f docker-compose.yml --env-file <special file> up -d 
+            ```
+            
             Данный релиз установлен на Промышленный стенд и функционируется стабильно.
           draft: false
           prerelease: false
