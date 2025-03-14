@@ -59,10 +59,18 @@ jobs:
     needs: pre-merge-check
     uses: makarmarkov/land_devops/.github/workflows/sec.yml@release # attention @branch-name is recomnneded
 
+    # create changelog file and put data to file 
+  tests:
+    name: (TST)
+    needs: secutiry
+    uses: makarmarkov/land_devops/.github/workflows/test.yml@release
+    with: 
+      version: alpha
+
   # start update version files       
   update-version:
     name: (VER) Version UP
-    needs: security
+    needs: tests
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -187,47 +195,15 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: ['changelog']
+              labels: ['changelog-${{needs.update-version.outputs.tag}}']
             })
 
 
   # create changelog file and put data to file 
-  build-fixme:
-    name: (CI) Build
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
+  build:
+    name: (BUILD)
     needs: changelog
-    steps:
-      - name: Prepare enviroments
-        run: |
-          echo "start build application"
-      # checkout on branch 
-      - name: Сheckout on [${{env.RELEASE_BRACH}}]
-        uses: actions/checkout@v2
-
-  # create changelog file and put data to file 
-  tests-fixme:
-    name: (TST)
-    needs: build-fixme
-    uses: makarmarkov/land_devops/.github/workflows/test.yml@release
-    with: 
-      version: alpha
-  
-  # telegram notify about all tests
-  tests-notify:
-    name: (TG) Notify test
-    needs: tests-fixme
-    runs-on: ubuntu-latest
-    steps:
-      - name: send telegram message on push
-        uses: appleboy/telegram-action@master
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            Тестирование пройдено
-
+    uses: makarmarkov/land_devops/.github/workflows/build.yml@release
 
   # build docker image and push to registry
   docker-push:
@@ -238,7 +214,7 @@ jobs:
       repository-projects: write
       id-token: write
     runs-on: ubuntu-latest
-    needs: [tests-notify,update-version]
+    needs: [build-fixme,update-version]
     env: 
       tag: ${{needs.update-version.outputs.tag}}
     steps:
@@ -321,6 +297,12 @@ jobs:
       - name: Checkout on release
         uses: actions/checkout@v2
       
+      # download changelog file
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{env.CHANGELOG_FILE}}
+          path: ${{env.CHANGELOG_FILE}}
+      
       # genearate message and notify 
       - name: send telegram message on push
         uses: appleboy/telegram-action@master
@@ -329,7 +311,8 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           format: html
           # document: ./.github/workflows/img.png
-          photo: ./.github/workflows/img.png
+          # photo: ./.github/workflows/img.png
+          document: ${{env.CHANGELOG_FILE}}
           message: |           
             Новый выпуск изменений
             <b>Проект</b> : <code>${{ env.REPO_NAME }}</code>
@@ -348,8 +331,8 @@ jobs:
             <b>Полное имя</b>:  <a href="https://hub.docker.com/repository/docker/${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}/tags">${{ secrets.DOCKER_HUB_LOGIN }}/${{ env.REPO_NAME }}:v${{env.tag}}</a>
   
   #calling another workflows
-  call-deploy:
-    name: Calling deploy workflow
+  deploy:
+    name: Deploy
     needs: [final-notify,update-version]
     uses: makarmarkov/land_devops/.github/workflows/deploy.yml@release
     with: 
