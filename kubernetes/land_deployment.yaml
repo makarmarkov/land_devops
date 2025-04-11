@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: land-devops
+  labels:
+    app: land-devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: land-devops
+  template:
+    metadata:
+      labels:
+        app: land-devops
+    spec:
+      containers:
+      - name: land-devops-container
+        image: makarmarkov/land_devops:v0.6.0
+        ports:
+        - containerPort: 80
