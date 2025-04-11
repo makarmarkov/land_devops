@@ -26,3 +26,5 @@
 #### [0.17.24] - 2025.03.14    hotfix/key-0
 ---
 #### [0.18.0] - 2025.04.11    feature/special-kuber
+---
+#### [0.18.0] - 2025.04.11    feature/special-kuber
